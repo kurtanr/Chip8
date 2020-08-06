@@ -1,0 +1,23 @@
+﻿using Chip8.Instructions;
+using Moq;
+using NUnit.Framework;
+
+namespace Chip8.Tests.Instructions
+{
+  [TestFixture]
+  public class Instruction_00EETests
+  {
+    [Test]
+    public void Executing_Instruction_00EE_WorksAsExpected()
+    {
+      var cpu = new Cpu();
+      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
+      cpu.Stack.Push(Cpu.MemoryAddressOfFirstInstruction + 10);
+
+      new Instruction_00EE(0x00EE).Execute(cpu, display);
+
+      Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 10));
+      Assert.That(cpu.Stack, Is.Empty);
+    }
+  }
+}

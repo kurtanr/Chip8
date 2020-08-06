@@ -14,9 +14,9 @@ namespace Chip8.Tests
       Assert.That(instructionDecoder.Decode(0x00, 0xE0), Is.InstanceOf<Instruction_00E0>());
       Assert.That(instructionDecoder.Decode(0x00, 0xEE), Is.InstanceOf<Instruction_00EE>());
 
-      Assert.That(instructionDecoder.Decode(0x10, 0x12), Is.InstanceOf<Instruction_1nnn>());
+      Assert.That(instructionDecoder.Decode(0x12, 0x46), Is.InstanceOf<Instruction_1nnn>());
 
-      Assert.That(instructionDecoder.Decode(0x20, 0x12), Is.InstanceOf<Instruction_2nnn>());
+      Assert.That(instructionDecoder.Decode(0x24, 0x68), Is.InstanceOf<Instruction_2nnn>());
 
       // TODO: add other instructions
     }

@@ -11,13 +11,13 @@ CHIP-8 is an [interpreted programming language](https://en.wikipedia.org/wiki/In
 
 Systems running CHIP-8 are great candidates for emulation, because of their simple architecture. CHIP-8 specification requires:
 -   Memory / CPU
-  -   4096 bytes of addressable memory
-  -   Sixteen 8-bit data registers (V0-VF)
-  -   One 16 bit address register (I)
+    -   4096 bytes of addressable memory
+    -   Sixteen 8-bit data registers (V0-VF)
+    -   One 16 bit address register (I)
 -   Graphics
-  -   Monochrome display with a resolution of 64x32 pixels
+    -   Monochrome display with a resolution of 64x32 pixels
 -   Input
-  -   16-key hexadecimal keypad
+    -   16-key hexadecimal keypad
 
   ```
   Original layout:         Emulated with:
