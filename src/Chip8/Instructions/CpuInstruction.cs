@@ -29,7 +29,7 @@ namespace Chip8.Instructions
     /// <param name="display">Display used to execute the instruction.</param>
     public abstract void Execute(Cpu cpu, IDisplay display);
 
-    public CpuInstruction(ushort instructionCode)
+    protected CpuInstruction(ushort instructionCode)
     {
       InstructionCode = instructionCode;
     }

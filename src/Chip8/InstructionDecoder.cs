@@ -36,7 +36,7 @@ namespace Chip8
       // A 4-bit value, the upper 4 bits of the high byte of the instruction
       byte opCode = (byte)((instructionCode & 0xF000) >> 12);
 
-      CpuInstruction cpuInstruction = null;
+      CpuInstruction cpuInstruction;
 
       switch (opCode)
       {
@@ -49,6 +49,10 @@ namespace Chip8
           {
             cpuInstruction = new Instruction_00EE(instructionCode);
           }
+          else
+          {
+            cpuInstruction = new UndefinedInstruction(instructionCode);
+          }
           break;
         case 0x1:
           cpuInstruction = new Instruction_1nnn(instructionCode, nnn);
@@ -57,9 +61,12 @@ namespace Chip8
           cpuInstruction = new Instruction_2nnn(instructionCode, nnn);
           break;
         // TODO: add other instructions
+        default:
+          cpuInstruction = new UndefinedInstruction(instructionCode);
+          break;
       }
 
-      return cpuInstruction ?? new UndefinedInstruction(instructionCode);
+      return cpuInstruction;
     }
   }
 }

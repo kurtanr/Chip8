@@ -18,12 +18,13 @@ Systems running CHIP-8 are great candidates for emulation, because of their simp
   -   Monochrome display with a resolution of 64x32 pixels
 -   Input
   -   16-key hexadecimal keypad
-    ```
-        Original layout:         Emulated with:
-            1 2 3 C                 1 2 3 4
-            4 5 6 D        -->      Q W E R
-            7 8 9 E                 A S D F
-            A 0 B F                 Z X C V
+
+  ```
+  Original layout:         Emulated with:
+      1 2 3 C                 1 2 3 4
+      4 5 6 D        -->      Q W E R
+      7 8 9 E                 A S D F
+      A 0 B F                 Z X C V
   ```
 
 ## Project goals

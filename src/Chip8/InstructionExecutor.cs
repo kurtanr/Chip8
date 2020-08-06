@@ -23,9 +23,18 @@ namespace Chip8
 
     public InstructionExecutor(Cpu cpu, IDisplay display, InstructionDecoder instructionDecoder)
     {
-      if (cpu == null) throw new ArgumentNullException(nameof(cpu));
-      if (display == null) throw new ArgumentNullException(nameof(display));
-      if (instructionDecoder == null) throw new ArgumentNullException(nameof(instructionDecoder));
+      if (cpu == null)
+      {
+        throw new ArgumentNullException(nameof(cpu));
+      }
+      if (display == null)
+      {
+        throw new ArgumentNullException(nameof(display)); 
+      }
+      if (instructionDecoder == null)
+      {
+        throw new ArgumentNullException(nameof(instructionDecoder));
+      }
 
       _cpu = cpu;
       _display = display;
