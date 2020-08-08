@@ -9,10 +9,13 @@
     {
     }
 
+    /// <inheritdoc/>
     public override string Description => "Clear the display.";
 
+    /// <inheritdoc/>
     public override string Mnemonic => "CLS";
 
+    /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
       display.Clear();

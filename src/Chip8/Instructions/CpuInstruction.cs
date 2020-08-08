@@ -34,6 +34,7 @@ namespace Chip8.Instructions
       InstructionCode = instructionCode;
     }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
       return $"{Mnemonic.PadRight(18)} // {Description}{Environment.NewLine}";

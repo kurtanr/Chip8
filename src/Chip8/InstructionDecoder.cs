@@ -60,6 +60,12 @@ namespace Chip8
         case 0x2:
           cpuInstruction = new Instruction_2nnn(instructionCode, nnn);
           break;
+        case 0x3:
+          cpuInstruction = new Instruction_3xkk(instructionCode, x, kk);
+          break;
+        case 0x4:
+          cpuInstruction = new Instruction_4xkk(instructionCode, x, kk);
+          break;
         // TODO: add other instructions
         default:
           cpuInstruction = new UndefinedInstruction(instructionCode);

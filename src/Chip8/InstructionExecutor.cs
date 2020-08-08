@@ -1,7 +1,5 @@
 ﻿using Chip8.Instructions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Chip8
 {
@@ -13,13 +11,6 @@ namespace Chip8
     private readonly Cpu _cpu;
     private readonly IDisplay _display;
     private readonly InstructionDecoder _instructionDecoder;
-    private readonly IEnumerable<Type> _instructionsWhichModifyPc = new List<Type>
-    { 
-      typeof(Instruction_00EE),
-      typeof(Instruction_1nnn),
-      typeof(Instruction_2nnn)
-      // TODO: add other instructions which modify PC
-    };
 
     public InstructionExecutor(Cpu cpu, IDisplay display, InstructionDecoder instructionDecoder)
     {
@@ -43,7 +34,7 @@ namespace Chip8
 
     /// <summary>
     /// Decodes and executes instruction from memory location to which <see cref="Cpu.PC"/> is pointing.
-    /// If executed instruction does not modify <see cref="Cpu.PC"/>, this method increments <see cref="Cpu.PC"/> by 2.
+    /// If executed instruction is not a RET/JP/CALL instruction, this method increments <see cref="Cpu.PC"/> by 2 after instruction execution.
     /// </summary>
     /// <returns>Instruction that was executed.</returns>
     /// <exception cref="InvalidOperationException">Attempting to execute <see cref="UndefinedInstruction"/>.</exception>
@@ -52,7 +43,7 @@ namespace Chip8
       var instruction = _instructionDecoder.Decode(_cpu.Memory[_cpu.PC], _cpu.Memory[_cpu.PC + 1]);
       instruction.Execute(_cpu, _display);
 
-      if (!_instructionsWhichModifyPc.Contains(instruction.GetType()))
+      if (!(instruction is Instruction_00EE || instruction is Instruction_1nnn || instruction is Instruction_2nnn))
       {
         _cpu.PC += 2;
       }

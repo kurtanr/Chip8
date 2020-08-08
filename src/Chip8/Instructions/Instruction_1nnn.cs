@@ -18,10 +18,13 @@
       _nnn = nnn;
     }
 
+    /// <inheritdoc/>
     public override string Description => _description;
 
+    /// <inheritdoc/>
     public override string Mnemonic => _mnemonic;
 
+    /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
       cpu.PC = _nnn;

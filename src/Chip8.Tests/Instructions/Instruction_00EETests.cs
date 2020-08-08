@@ -14,10 +14,12 @@ namespace Chip8.Tests.Instructions
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       cpu.Stack.Push(Cpu.MemoryAddressOfFirstInstruction + 10);
 
-      new Instruction_00EE(0x00EE).Execute(cpu, display);
+      var instruction = new Instruction_00EE(0x00EE);
+      instruction.Execute(cpu, display);
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 10));
       Assert.That(cpu.Stack, Is.Empty);
+      Assert.That(instruction.Mnemonic, Is.EqualTo("RET"));
     }
   }
 }

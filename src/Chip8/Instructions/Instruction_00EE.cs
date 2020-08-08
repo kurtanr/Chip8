@@ -12,10 +12,13 @@
     {
     }
 
+    /// <inheritdoc/>
     public override string Description => "Return from a subroutine.";
 
+    /// <inheritdoc/>
     public override string Mnemonic => "RET";
 
+    /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
       cpu.PC = cpu.Stack.Pop();

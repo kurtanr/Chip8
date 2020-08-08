@@ -17,6 +17,7 @@ namespace Chip8.Tests.Instructions
       Assert.That(undefinedInstruction.Description, Is.EqualTo(string.Empty));
       Assert.That(undefinedInstruction.InstructionCode, Is.EqualTo(instructionCode));
       Assert.That(undefinedInstruction.Mnemonic, Is.EqualTo($"0x{instructionCode:X4}"));
+      Assert.That(undefinedInstruction.ToString(), Is.EqualTo(undefinedInstruction.Mnemonic));
     }
 
     [Test]
@@ -24,7 +25,6 @@ namespace Chip8.Tests.Instructions
     {
       var cpu = new Cpu();
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
-      var undefinedInstruction = new UndefinedInstruction(0);
 
       Assert.Throws<InvalidOperationException>(() => new UndefinedInstruction(0x0).Execute(cpu, display));
     }
