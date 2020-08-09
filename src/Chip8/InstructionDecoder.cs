@@ -27,7 +27,7 @@ namespace Chip8
     /// <returns>Concrete Cpu instruction or <see cref="UndefinedInstruction"/> if instruction cannot be determined.</returns>
     public CpuInstruction GetCpuInstruction(DecodedInstruction decodedInstruction)
     {
-      CpuInstruction cpuInstruction;
+      CpuInstruction cpuInstruction = null;
 
       switch (decodedInstruction.OpCode)
       {
@@ -39,10 +39,6 @@ namespace Chip8
           else if (decodedInstruction.kk == 0xEE)
           {
             cpuInstruction = new Instruction_00EE(decodedInstruction);
-          }
-          else
-          {
-            cpuInstruction = new UndefinedInstruction(decodedInstruction);
           }
           break;
         case 0x1:
@@ -57,13 +53,25 @@ namespace Chip8
         case 0x4:
           cpuInstruction = new Instruction_4xkk(decodedInstruction);
           break;
+        case 0x5:
+          if (decodedInstruction.n == 0x0)
+          {
+            cpuInstruction = new Instruction_5xy0(decodedInstruction);
+          }
+          break;
+        case 0x6:
+          cpuInstruction = new Instruction_6xkk(decodedInstruction);
+          break;
+        case 0x7:
+          cpuInstruction = new Instruction_7xkk(decodedInstruction);
+          break;
         // TODO: add other instructions
         default:
           cpuInstruction = new UndefinedInstruction(decodedInstruction);
           break;
       }
 
-      return cpuInstruction;
+      return cpuInstruction ?? new UndefinedInstruction(decodedInstruction);
     }
   }
 }

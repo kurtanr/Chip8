@@ -1,9 +1,11 @@
-﻿namespace Chip8.Instructions
+﻿using System;
+
+namespace Chip8.Instructions
 {
   /// <summary>
   /// Instruction decoded from 2 bytes of memory.
   /// </summary>
-  public struct DecodedInstruction
+  public struct DecodedInstruction : IEquatable<DecodedInstruction>
   {
     /// <summary>
     /// Entire instruction - 2 bytes long and stored most-significant-byte first.
@@ -49,6 +51,12 @@
       y = (byte)((InstructionCode & 0xF0) >> 4);
       kk = (byte)(InstructionCode & 0xFF);
       OpCode = (byte)((InstructionCode & 0xF000) >> 12);
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(DecodedInstruction other)
+    {
+      return InstructionCode == other.InstructionCode;
     }
   }
 }

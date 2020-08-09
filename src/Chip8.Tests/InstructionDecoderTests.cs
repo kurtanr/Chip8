@@ -37,15 +37,22 @@ namespace Chip8.Tests
 
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x4468)), Is.InstanceOf<Instruction_4xkk>());
 
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x5460)), Is.InstanceOf<Instruction_5xy0>());
+
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x6123)), Is.InstanceOf<Instruction_6xkk>());
+
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x7123)), Is.InstanceOf<Instruction_7xkk>());
+
       // TODO: add other instructions
     }
 
     [Test]
-    public void UndefinedCpuInstruction_IsCorrectlyDecoded()
+    public void UndefinedCpuInstructions_AreDecodedAsUndefinedInstructions()
     {
       var instructionDecoder = new InstructionDecoder();
 
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x0000)), Is.InstanceOf<UndefinedInstruction>());
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x5468)), Is.InstanceOf<UndefinedInstruction>());
     }
   }
 }
