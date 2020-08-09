@@ -7,13 +7,9 @@
   {
     public Instruction_00E0(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
+      Description = "Clear the display.";
+      Mnemonic = "CLS";
     }
-
-    /// <inheritdoc/>
-    public override string Description => "Clear the display.";
-
-    /// <inheritdoc/>
-    public override string Mnemonic => "CLS";
 
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)

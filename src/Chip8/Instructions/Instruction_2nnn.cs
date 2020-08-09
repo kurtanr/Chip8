@@ -8,19 +8,11 @@
   /// </remarks>
   public class Instruction_2nnn : CpuInstruction
   {
-    private readonly string _description, _mnemonic;
-
     public Instruction_2nnn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      _description = $"Call subroutine at 0x{Decoded.nnn:X}.";
-      _mnemonic = $"CALL 0x{Decoded.nnn:X}";
+      Description = $"Call subroutine at 0x{Decoded.nnn:X}.";
+      Mnemonic = $"CALL 0x{Decoded.nnn:X}";
     }
-
-    /// <inheritdoc/>
-    public override string Description => _description;
-
-    /// <inheritdoc/>
-    public override string Mnemonic => _mnemonic;
 
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)

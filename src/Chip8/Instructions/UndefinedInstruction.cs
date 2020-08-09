@@ -10,13 +10,9 @@ namespace Chip8.Instructions
   {
     public UndefinedInstruction(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
+      Description = string.Empty;
+      Mnemonic = $"0x{Decoded.InstructionCode:X4}";
     }
-
-    /// <inheritdoc/>
-    public override string Description => string.Empty;
-
-    /// <inheritdoc/>
-    public override string Mnemonic => $"0x{Decoded.InstructionCode:X4}";
 
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)

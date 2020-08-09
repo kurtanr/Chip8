@@ -65,6 +65,12 @@ namespace Chip8
         case 0x7:
           cpuInstruction = new Instruction_7xkk(decodedInstruction);
           break;
+        case 0x9:
+          if (decodedInstruction.n == 0x0)
+          {
+            cpuInstruction = new Instruction_9xy0(decodedInstruction);
+          }
+          break;
         // TODO: add other instructions
         default:
           cpuInstruction = new UndefinedInstruction(decodedInstruction);

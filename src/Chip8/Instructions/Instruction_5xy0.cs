@@ -8,19 +8,11 @@
   /// </remarks>
   public class Instruction_5xy0 : CpuInstruction
   {
-    private readonly string _description, _mnemonic;
- 
     public Instruction_5xy0(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      _description = $"Skip next instruction if V{Decoded.x:X} = V{Decoded.y:X}.";
-      _mnemonic = $"SE V{Decoded.x:X}, V{Decoded.y:X}";
+      Description = $"Skip next instruction if V{Decoded.x:X} = V{Decoded.y:X}.";
+      Mnemonic = $"SE V{Decoded.x:X}, V{Decoded.y:X}";
     }
-
-    /// <inheritdoc/>
-    public override string Description => _description;
-
-    /// <inheritdoc/>
-    public override string Mnemonic => _mnemonic;
 
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)

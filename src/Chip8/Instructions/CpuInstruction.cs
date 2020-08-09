@@ -15,12 +15,12 @@ namespace Chip8.Instructions
     /// <summary>
     /// Description of what the instruction does.
     /// </summary>
-    public abstract string Description { get; }
+    public string Description { get; protected set; }
 
     /// <summary>
     /// Symbolic name of the instruction.
     /// </summary>
-    public abstract string Mnemonic { get; }
+    public string Mnemonic { get; protected set; }
 
     /// <summary>
     /// Executes instruction using <paramref name="cpu"/> and <paramref name="display"/>.
