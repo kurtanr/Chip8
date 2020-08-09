@@ -13,13 +13,13 @@ namespace Chip8.Tests.Instructions
       var cpu = new Cpu();
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       cpu.Stack.Push(Cpu.MemoryAddressOfFirstInstruction + 10);
-      ushort nnn = 0x0246;
+      var decodedInstruction = new DecodedInstruction(0x1246);
 
-      var instruction = new Instruction_1nnn(0x1246, nnn);
+      var instruction = new Instruction_1nnn(decodedInstruction);
       instruction.Execute(cpu, display);
 
-      Assert.That(cpu.PC, Is.EqualTo(nnn));
-      Assert.That(instruction.Mnemonic, Is.EqualTo($"JP 0x{nnn:X}"));
+      Assert.That(cpu.PC, Is.EqualTo(decodedInstruction.nnn));
+      Assert.That(instruction.Mnemonic, Is.EqualTo($"JP 0x{decodedInstruction.nnn:X}"));
     }
   }
 }

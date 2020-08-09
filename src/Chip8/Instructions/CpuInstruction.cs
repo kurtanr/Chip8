@@ -8,9 +8,9 @@ namespace Chip8.Instructions
   public abstract class CpuInstruction
   {
     /// <summary>
-    /// 16 bit identifier of the instruction - contains instruction opCode and operands.
+    /// Decoded 16 bit identifier of the instruction.
     /// </summary>
-    public ushort InstructionCode { get; }
+    public DecodedInstruction Decoded { get; }
 
     /// <summary>
     /// Description of what the instruction does.
@@ -29,9 +29,9 @@ namespace Chip8.Instructions
     /// <param name="display">Display used to execute the instruction.</param>
     public abstract void Execute(Cpu cpu, IDisplay display);
 
-    protected CpuInstruction(ushort instructionCode)
+    protected CpuInstruction(DecodedInstruction decodedInstruction)
     {
-      InstructionCode = instructionCode;
+      Decoded = decodedInstruction;
     }
 
     /// <inheritdoc/>

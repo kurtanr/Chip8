@@ -14,7 +14,7 @@ namespace Chip8.Tests.Instructions
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       cpu.Stack.Push(Cpu.MemoryAddressOfFirstInstruction + 10);
 
-      var instruction = new Instruction_00EE(0x00EE);
+      var instruction = new Instruction_00EE(new DecodedInstruction(0x00EE));
       instruction.Execute(cpu, display);
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 10));

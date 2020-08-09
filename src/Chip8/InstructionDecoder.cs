@@ -3,72 +3,63 @@
 namespace Chip8
 {
   /// <summary>
-  /// Decodes memory content into instances of <see cref="CpuInstruction"/>.
+  /// Decodes memory content into instances of <see cref="DecodedInstruction"/> and <see cref="CpuInstruction"/>.
   /// </summary>
   public class InstructionDecoder
   {
     /// <summary>
-    /// Decodes two bytes into an instance of <see cref="CpuInstruction"/>.
+    /// Decodes two bytes into an instance of <see cref="DecodedInstruction"/>.
     /// </summary>
     /// <param name="mostSignificant">Most significant byte of instruction (first one).</param>
     /// <param name="leastSignificant">Least significant byte of instruction (second one).</param>
-    /// <returns>Decoded instruction or <see cref="UndefinedInstruction"/> if instruction cannot be decoded.</returns>
-    public CpuInstruction Decode(byte mostSignificant, byte leastSignificant)
+    /// <returns>Instance of <see cref="DecodedInstruction"/>.</returns>
+    public DecodedInstruction Decode(byte mostSignificant, byte leastSignificant)
     {
       // All instructions are 2 bytes long and are stored most-significant-byte first.
-      ushort instructionCode = (ushort)((mostSignificant << 8) | leastSignificant);
+      var instructionCode = (ushort)((mostSignificant << 8) | leastSignificant);
+      return new DecodedInstruction(instructionCode);
+    }
 
-      // nnn or addr - A 12 - bit value, the lowest 12 bits of the instruction
-      ushort nnn = (ushort)(instructionCode & 0xFFF);
-
-      // n or nibble - A 4-bit value, the lowest 4 bits of the instruction
-      byte n = (byte)(instructionCode & 0xF);
-
-      // x - A 4-bit value, the lower 4 bits of the high byte of the instruction
-      byte x = (byte)((instructionCode & 0xF00) >> 8);
-
-      // y - A 4-bit value, the upper 4 bits of the low byte of the instruction
-      byte y = (byte)((instructionCode & 0xF0) >> 4);
-
-      // kk or byte - An 8-bit value, the lowest 8 bits of the instruction
-      byte kk = (byte)(instructionCode & 0xFF);
-
-      // A 4-bit value, the upper 4 bits of the high byte of the instruction
-      byte opCode = (byte)((instructionCode & 0xF000) >> 12);
-
+    /// <summary>
+    /// Converts instance of <see cref="DecodedInstruction"/> into an instance of <see cref="CpuInstruction"/>.
+    /// </summary>
+    /// <param name="decodedInstruction">Decoded 2 bytes of memory.</param>
+    /// <returns>Concrete Cpu instruction or <see cref="UndefinedInstruction"/> if instruction cannot be determined.</returns>
+    public CpuInstruction GetCpuInstruction(DecodedInstruction decodedInstruction)
+    {
       CpuInstruction cpuInstruction;
 
-      switch (opCode)
+      switch (decodedInstruction.OpCode)
       {
         case 0x0:
-          if (kk == 0xE0)
+          if (decodedInstruction.kk == 0xE0)
           {
-            cpuInstruction = new Instruction_00E0(instructionCode);
+            cpuInstruction = new Instruction_00E0(decodedInstruction);
           }
-          else if (kk == 0xEE)
+          else if (decodedInstruction.kk == 0xEE)
           {
-            cpuInstruction = new Instruction_00EE(instructionCode);
+            cpuInstruction = new Instruction_00EE(decodedInstruction);
           }
           else
           {
-            cpuInstruction = new UndefinedInstruction(instructionCode);
+            cpuInstruction = new UndefinedInstruction(decodedInstruction);
           }
           break;
         case 0x1:
-          cpuInstruction = new Instruction_1nnn(instructionCode, nnn);
+          cpuInstruction = new Instruction_1nnn(decodedInstruction);
           break;
         case 0x2:
-          cpuInstruction = new Instruction_2nnn(instructionCode, nnn);
+          cpuInstruction = new Instruction_2nnn(decodedInstruction);
           break;
         case 0x3:
-          cpuInstruction = new Instruction_3xkk(instructionCode, x, kk);
+          cpuInstruction = new Instruction_3xkk(decodedInstruction);
           break;
         case 0x4:
-          cpuInstruction = new Instruction_4xkk(instructionCode, x, kk);
+          cpuInstruction = new Instruction_4xkk(decodedInstruction);
           break;
         // TODO: add other instructions
         default:
-          cpuInstruction = new UndefinedInstruction(instructionCode);
+          cpuInstruction = new UndefinedInstruction(decodedInstruction);
           break;
       }
 

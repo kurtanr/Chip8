@@ -9,13 +9,11 @@
   public class Instruction_1nnn : CpuInstruction
   {
     private readonly string _description, _mnemonic;
-    private readonly ushort _nnn;
 
-    public Instruction_1nnn(ushort instructionCode, ushort nnn) : base(instructionCode)
+    public Instruction_1nnn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      _description = $"Jump to location 0x{nnn:X}.";
-      _mnemonic = $"JP 0x{nnn:X}";
-      _nnn = nnn;
+      _description = $"Jump to location 0x{Decoded.nnn:X}.";
+      _mnemonic = $"JP 0x{Decoded.nnn:X}";
     }
 
     /// <inheritdoc/>
@@ -27,7 +25,7 @@
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
-      cpu.PC = _nnn;
+      cpu.PC = Decoded.nnn;
     }
   }
 }

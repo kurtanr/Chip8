@@ -40,15 +40,17 @@ namespace Chip8
     /// <exception cref="InvalidOperationException">Attempting to execute <see cref="UndefinedInstruction"/>.</exception>
     public CpuInstruction ExecuteSingleInstruction()
     {
-      var instruction = _instructionDecoder.Decode(_cpu.Memory[_cpu.PC], _cpu.Memory[_cpu.PC + 1]);
-      instruction.Execute(_cpu, _display);
+      var decodedInstruction = _instructionDecoder.Decode(_cpu.Memory[_cpu.PC], _cpu.Memory[_cpu.PC + 1]);
+      var cpuInstruction = _instructionDecoder.GetCpuInstruction(decodedInstruction);
 
-      if (!(instruction is Instruction_00EE || instruction is Instruction_1nnn || instruction is Instruction_2nnn))
+      cpuInstruction.Execute(_cpu, _display);
+
+      if (!(cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn || cpuInstruction is Instruction_2nnn))
       {
         _cpu.PC += 2;
       }
 
-      return instruction;
+      return cpuInstruction;
     }
   }
 }

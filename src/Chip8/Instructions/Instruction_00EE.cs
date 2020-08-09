@@ -8,7 +8,7 @@
   /// </remarks>
   public class Instruction_00EE : CpuInstruction
   {
-    public Instruction_00EE(ushort instructionCode) : base(instructionCode)
+    public Instruction_00EE(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
     }
 

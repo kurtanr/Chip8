@@ -13,21 +13,19 @@ namespace Chip8.Tests.Instructions
     {
       var cpu = new Cpu();
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
-      const byte x = 0x4;
-      const byte kk = 0x68;
+      var decodedInstruction = new DecodedInstruction(0x4468);
 
       if (vxEqualToKk)
       {
-        cpu.V[x] = kk;
+        cpu.V[decodedInstruction.x] = decodedInstruction.kk;
       }
 
-      ushort instructionCode = (0x3 << 12) | (x << 8) | kk;
-      var instruction = new Instruction_4xkk(instructionCode, x, kk);
+      var instruction = new Instruction_4xkk(decodedInstruction);
       instruction.Execute(cpu, display);
 
       var pcOffset = (vxEqualToKk == true) ? 0 : 2;
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + pcOffset));
-      Assert.That(instruction.Mnemonic, Is.EqualTo($"SNE V{x:X}, 0x{kk:X}"));
+      Assert.That(instruction.Mnemonic, Is.EqualTo($"SNE V{decodedInstruction.x:X}, 0x{decodedInstruction.kk:X}"));
     }
   }
 }

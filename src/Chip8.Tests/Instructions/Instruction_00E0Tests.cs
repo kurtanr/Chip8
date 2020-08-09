@@ -14,7 +14,7 @@ namespace Chip8.Tests.Instructions
       var displayMock = new Mock<IDisplay>(MockBehavior.Strict);
       displayMock.Setup(x => x.Clear());
 
-      var instruction = new Instruction_00E0(0x00E0);
+      var instruction = new Instruction_00E0(new DecodedInstruction(0x00E0));
       instruction.Execute(cpu, displayMock.Object);
 
       displayMock.Verify(x => x.Clear(), Times.Once);

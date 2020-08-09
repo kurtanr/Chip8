@@ -8,7 +8,7 @@ namespace Chip8.Instructions
   /// </summary>
   public class UndefinedInstruction : CpuInstruction
   {
-    public UndefinedInstruction(ushort instructionCode) : base(instructionCode)
+    public UndefinedInstruction(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
     }
 
@@ -16,7 +16,7 @@ namespace Chip8.Instructions
     public override string Description => string.Empty;
 
     /// <inheritdoc/>
-    public override string Mnemonic => $"0x{InstructionCode:X4}";
+    public override string Mnemonic => $"0x{Decoded.InstructionCode:X4}";
 
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)

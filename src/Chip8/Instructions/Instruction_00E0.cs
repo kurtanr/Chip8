@@ -5,7 +5,7 @@
   /// </summary>
   public class Instruction_00E0 : CpuInstruction
   {
-    public Instruction_00E0(ushort instructionCode) : base(instructionCode)
+    public Instruction_00E0(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
     }
 

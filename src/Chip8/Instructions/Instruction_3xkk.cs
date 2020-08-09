@@ -9,14 +9,11 @@
   public class Instruction_3xkk : CpuInstruction
   {
     private readonly string _description, _mnemonic;
-    private readonly byte _x, _kk;
 
-    public Instruction_3xkk(ushort instructionCode, byte x, byte kk) : base(instructionCode)
+    public Instruction_3xkk(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      _description = $"Skip next instruction if V{x:X} = 0x{kk:X}.";
-      _mnemonic = $"SE V{x:X}, 0x{kk:X}";
-      _x = x;
-      _kk = kk;
+      _description = $"Skip next instruction if V{Decoded.x:X} = 0x{Decoded.kk:X}.";
+      _mnemonic = $"SE V{Decoded.x:X}, 0x{Decoded.kk:X}";
     }
 
     /// <inheritdoc/>
@@ -28,7 +25,7 @@
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
-      if(cpu.V[_x] == _kk)
+      if(cpu.V[Decoded.x] == Decoded.kk)
       {
         cpu.PC += 2;
       }

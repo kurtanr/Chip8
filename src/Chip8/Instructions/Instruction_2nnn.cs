@@ -9,13 +9,11 @@
   public class Instruction_2nnn : CpuInstruction
   {
     private readonly string _description, _mnemonic;
-    private readonly ushort _nnn;
 
-    public Instruction_2nnn(ushort instructionCode, ushort nnn) : base(instructionCode)
+    public Instruction_2nnn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      _description = $"Call subroutine at 0x{nnn:X}.";
-      _mnemonic = $"CALL 0x{nnn:X}";
-      _nnn = nnn;
+      _description = $"Call subroutine at 0x{Decoded.nnn:X}.";
+      _mnemonic = $"CALL 0x{Decoded.nnn:X}";
     }
 
     /// <inheritdoc/>
@@ -28,7 +26,7 @@
     public override void Execute(Cpu cpu, IDisplay display)
     {
       cpu.Stack.Push(cpu.PC);
-      cpu.PC = _nnn;
+      cpu.PC = Decoded.nnn;
     }
   }
 }
