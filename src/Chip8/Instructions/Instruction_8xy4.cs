@@ -13,7 +13,7 @@ namespace Chip8.Instructions
   {
     public Instruction_8xy4(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      Description = $"Set V{Decoded.x:X} = V{Decoded.x:X} + V{Decoded.y:X}, VF = carry";
+      Description = $"Set V{Decoded.x:X} = V{Decoded.x:X} + V{Decoded.y:X}, VF = carry.";
       Mnemonic = $"ADD V{Decoded.x:X}, V{Decoded.y:X}";
     }
 

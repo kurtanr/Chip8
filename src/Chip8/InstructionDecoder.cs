@@ -86,6 +86,14 @@ namespace Chip8
           {
             cpuInstruction = new Instruction_8xy4(decodedInstruction);
           }
+          else if (decodedInstruction.n == 0x5)
+          {
+            cpuInstruction = new Instruction_8xy5(decodedInstruction);
+          }
+          else if (decodedInstruction.n == 0x7)
+          {
+            cpuInstruction = new Instruction_8xy7(decodedInstruction);
+          }
           break;
         case 0x9:
           if (decodedInstruction.n == 0x0)
