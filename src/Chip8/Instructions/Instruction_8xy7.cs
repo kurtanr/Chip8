@@ -21,7 +21,7 @@ namespace Chip8.Instructions
     {
       if(Decoded.x == 0xF)
       {
-        throw new InvalidOperationException("Cannot use VF as Vx register of SUB operation. VF is already storing the !borrow flag so it cannot store the result also.");
+        throw new InvalidOperationException("Cannot use VF as Vx register of SUBN operation. VF is already storing the !borrow flag so it cannot store the result also.");
       }
 
       var sum = Math.Abs(cpu.V[Decoded.y] - cpu.V[Decoded.x]);

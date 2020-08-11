@@ -66,33 +66,40 @@ namespace Chip8
           cpuInstruction = new Instruction_7xkk(decodedInstruction);
           break;
         case 0x8:
-          if (decodedInstruction.n == 0x0)
           {
-            cpuInstruction = new Instruction_8xy0(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x1)
-          {
-            cpuInstruction = new Instruction_8xy1(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x2)
-          {
-            cpuInstruction = new Instruction_8xy2(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x3)
-          {
-            cpuInstruction = new Instruction_8xy3(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x4)
-          {
-            cpuInstruction = new Instruction_8xy4(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x5)
-          {
-            cpuInstruction = new Instruction_8xy5(decodedInstruction);
-          }
-          else if (decodedInstruction.n == 0x7)
-          {
-            cpuInstruction = new Instruction_8xy7(decodedInstruction);
+            switch (decodedInstruction.n)
+            {
+              case 0x0:
+                cpuInstruction = new Instruction_8xy0(decodedInstruction);
+                break;
+              case 0x1:
+                cpuInstruction = new Instruction_8xy1(decodedInstruction);
+                break;
+              case 0x2:
+                cpuInstruction = new Instruction_8xy2(decodedInstruction);
+                break;
+              case 0x3:
+                cpuInstruction = new Instruction_8xy3(decodedInstruction);
+                break;
+              case 0x4:
+                cpuInstruction = new Instruction_8xy4(decodedInstruction);
+                break;
+              case 0x5:
+                cpuInstruction = new Instruction_8xy5(decodedInstruction);
+                break;
+              case 0x6:
+                cpuInstruction = new Instruction_8xy6(decodedInstruction);
+                break;
+              case 0x7:
+                cpuInstruction = new Instruction_8xy7(decodedInstruction);
+                break;
+              case 0xE:
+                cpuInstruction = new Instruction_8xyE(decodedInstruction);
+                break;
+              default:
+                cpuInstruction = new UndefinedInstruction(decodedInstruction);
+                break;
+            }
           }
           break;
         case 0x9:
