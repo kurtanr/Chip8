@@ -8,10 +8,10 @@ namespace Chip8
   /// </summary>
   public class Cpu
   {
-    public static readonly uint MemorySizeInBytes = 4096;
-    public static readonly uint MaxStackDepth = 16;
-    public static readonly uint MemoryAddressOfFirstInstruction = 0x200;
-    public static readonly uint MemoryAddressOfLastInstruction = 0xFFF - 1;
+    public static readonly ushort MemorySizeInBytes = 4096;
+    public static readonly ushort MaxStackDepth = 16;
+    public static readonly ushort MemoryAddressOfFirstInstruction = 0x200;
+    public static readonly ushort MemoryAddressOfLastInstruction = 0xFFF - 1;
 
     #region Fields and properties
 
@@ -23,16 +23,16 @@ namespace Chip8
     /// <summary>
     /// 16-bit index register.
     /// </summary>
-    public uint I { get; set; }
+    public ushort I { get; set; }
 
-    private uint _pc;
+    private ushort _pc;
 
     /// <summary>
     /// 16-bit program counter.
     /// Default value is <see cref="MemoryAddressOfFirstInstruction"/>.
     /// Value must be in range [<see cref="MemoryAddressOfFirstInstruction"/>, <see cref="MemoryAddressOfLastInstruction"/>]
     /// </summary>
-    public uint PC
+    public ushort PC
     {
       get { return _pc; }
       set
@@ -110,7 +110,7 @@ namespace Chip8
     /// <summary>
     /// Stack with maximum depth set to <see cref="MaxStackDepth"/>.
     /// </summary>
-    public class StackWithMaxDepth : Stack<uint>
+    public class StackWithMaxDepth : Stack<ushort>
     {
       public StackWithMaxDepth() : base((int)MaxStackDepth)
       {
@@ -121,7 +121,7 @@ namespace Chip8
       /// </summary>
       /// <param name="item">The object to push onto the stack.</param>
       /// <exception cref="InvalidOperationException">Exceeded maximum stack depth.</exception>
-      public new void Push(uint item)
+      public new void Push(ushort item)
       {
         if(Count >= MaxStackDepth)
         {

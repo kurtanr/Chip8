@@ -12,7 +12,7 @@ namespace Chip8.Tests.Instructions
     {
       var cpu = new Cpu();
       var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
-      cpu.Stack.Push(Cpu.MemoryAddressOfFirstInstruction + 10);
+      cpu.Stack.Push((ushort)(Cpu.MemoryAddressOfFirstInstruction + 10));
       var decodedInstruction = new DecodedInstruction(0x1246);
 
       var instruction = new Instruction_1nnn(decodedInstruction);

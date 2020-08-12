@@ -55,6 +55,10 @@ namespace Chip8.Tests
 
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x9460)), Is.InstanceOf<Instruction_9xy0>());
 
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xA123)), Is.InstanceOf<Instruction_Annn>());
+
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xB123)), Is.InstanceOf<Instruction_Bnnn>());
+
       // TODO: add other instructions
     }
 

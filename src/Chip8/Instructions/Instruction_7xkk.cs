@@ -17,7 +17,8 @@
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
-      // TODO: what about overflow?
+      // Vx is an 8-bit register and if the sum is over 255 (0xFF), it will be reduced by 256 (0x100) to fit.
+      // Unlike in Instruction_8xy4, VF will not be set to carry flag.
       cpu.V[Decoded.x] += Decoded.kk;
     }
   }

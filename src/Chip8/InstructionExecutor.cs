@@ -45,7 +45,8 @@ namespace Chip8
 
       cpuInstruction.Execute(_cpu, _display);
 
-      if (!(cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn || cpuInstruction is Instruction_2nnn))
+      if (!(cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn || 
+            cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn))
       {
         _cpu.PC += 2;
       }

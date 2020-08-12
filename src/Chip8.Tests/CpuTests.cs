@@ -13,7 +13,7 @@ namespace Chip8.Tests
       {
         DT = 1,
         I = 1,
-        PC = Cpu.MemoryAddressOfFirstInstruction + 6,
+        PC = (ushort)(Cpu.MemoryAddressOfFirstInstruction + 6),
         ST = 1
       };
       for (byte i = 0; i < cpu.V.Length; i++)
@@ -41,7 +41,7 @@ namespace Chip8.Tests
       cpu.Reset();
 
       Assert.That(cpu.Stack, Is.Empty);
-      CollectionAssert.AreEqual(new uint[Cpu.MemorySizeInBytes], cpu.Memory);
+      CollectionAssert.AreEqual(new ushort[Cpu.MemorySizeInBytes], cpu.Memory);
     }
 
     [Test]
@@ -49,7 +49,7 @@ namespace Chip8.Tests
     {
       var cpu = new Cpu();
 
-      for (uint i = 0; i < Cpu.MaxStackDepth; i++)
+      for (ushort i = 0; i < Cpu.MaxStackDepth; i++)
       {
         cpu.Stack.Push(i);
       }
@@ -74,8 +74,8 @@ namespace Chip8.Tests
       Assert.DoesNotThrow(() => cpu.PC = Cpu.MemoryAddressOfFirstInstruction);
       Assert.DoesNotThrow(() => cpu.PC = Cpu.MemoryAddressOfLastInstruction);
 
-      Assert.Throws<InvalidOperationException>(() => cpu.PC = Cpu.MemoryAddressOfFirstInstruction - 1);
-      Assert.Throws<InvalidOperationException>(() => cpu.PC = Cpu.MemoryAddressOfLastInstruction + 1);
+      Assert.Throws<InvalidOperationException>(() => cpu.PC = (ushort)(Cpu.MemoryAddressOfFirstInstruction - 1));
+      Assert.Throws<InvalidOperationException>(() => cpu.PC = (ushort)(Cpu.MemoryAddressOfLastInstruction + 1));
     }
   }
 }
