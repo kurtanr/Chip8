@@ -114,6 +114,9 @@ namespace Chip8
         case 0xB:
           cpuInstruction = new Instruction_Bnnn(decodedInstruction);
           break;
+        case 0xC:
+          cpuInstruction = new Instruction_Cxkk(decodedInstruction);
+          break;
         // TODO: add other instructions
         default:
           cpuInstruction = new UndefinedInstruction(decodedInstruction);
