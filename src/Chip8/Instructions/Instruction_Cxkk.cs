@@ -13,7 +13,7 @@ namespace Chip8.Instructions
   {
     public Instruction_Cxkk(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
-      Description = $"Set V{Decoded.x:X} = random byte AND 0x{Decoded.kk:X}";
+      Description = $"Set V{Decoded.x:X} = random byte AND 0x{Decoded.kk:X}.";
       Mnemonic = $"RND V{Decoded.x:X}, 0x{Decoded.kk:X}";
     }
 
