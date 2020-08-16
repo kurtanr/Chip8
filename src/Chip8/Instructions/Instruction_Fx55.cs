@@ -29,11 +29,11 @@ namespace Chip8.Instructions
     {
       var maxAddress = Cpu.MemorySizeInBytes - 1;
 
-      for (int i = 0; i<= Decoded.x; i++)
+      for (byte i = 0; i<= Decoded.x; i++)
       {
         if(cpu.I > maxAddress)
         {
-          throw new InvalidOperationException($"Attempting to write at memory address I (0x{cpu.I:X})." +
+          throw new InvalidOperationException($"Attempting to write to memory at address I (0x{cpu.I:X})." +
             $"Highest accessible memory address is 0x{maxAddress:X}.");
         }
 

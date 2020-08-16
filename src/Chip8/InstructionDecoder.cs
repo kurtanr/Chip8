@@ -124,6 +124,9 @@ namespace Chip8
               case 0x55:
                 cpuInstruction = new Instruction_Fx55(decodedInstruction);
                 break;
+              case 0x65:
+                cpuInstruction = new Instruction_Fx65(decodedInstruction);
+                break;
               default:
                 cpuInstruction = new UndefinedInstruction(decodedInstruction);
                 break;
