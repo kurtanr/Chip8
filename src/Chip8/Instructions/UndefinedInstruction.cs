@@ -21,9 +21,9 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override string ToString()
+    public override string ToStringWithDescription()
     {
-      return Mnemonic;
+      return ToString();
     }
   }
 }

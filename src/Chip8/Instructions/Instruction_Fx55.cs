@@ -19,7 +19,7 @@ namespace Chip8.Instructions
       }
       else
       {
-        Description = $"Store V0..V{Decoded.x:X} starting at address I, I+={Decoded.x + 1}";
+        Description = $"Store V0..V{Decoded.x:X} starting at address I, I+={Decoded.x + 1}.";
       }
       Mnemonic = $"LD [I], V{Decoded.x:X}";
     }

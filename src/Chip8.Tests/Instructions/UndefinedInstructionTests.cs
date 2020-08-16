@@ -18,6 +18,7 @@ namespace Chip8.Tests.Instructions
       Assert.That(undefinedInstruction.Decoded.InstructionCode, Is.EqualTo(instructionCode));
       Assert.That(undefinedInstruction.Mnemonic, Is.EqualTo($"0x{instructionCode:X4}"));
       Assert.That(undefinedInstruction.ToString(), Is.EqualTo(undefinedInstruction.Mnemonic));
+      Assert.That(undefinedInstruction.ToStringWithDescription(), Is.EqualTo(undefinedInstruction.Mnemonic));
     }
 
     [Test]

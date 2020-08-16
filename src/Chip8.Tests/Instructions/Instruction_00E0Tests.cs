@@ -19,6 +19,8 @@ namespace Chip8.Tests.Instructions
 
       displayMock.Verify(x => x.Clear(), Times.Once);
       Assert.That(instruction.Mnemonic, Is.EqualTo("CLS"));
+      Assert.That(instruction.ToString(), Is.EqualTo("CLS"));
+      Assert.That(instruction.ToStringWithDescription(), Is.EqualTo($"{"CLS".PadRight(18)} // Clear the display."));
     }
   }
 }

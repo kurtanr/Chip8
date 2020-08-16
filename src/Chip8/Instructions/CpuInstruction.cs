@@ -37,7 +37,12 @@ namespace Chip8.Instructions
     /// <inheritdoc/>
     public override string ToString()
     {
-      return $"{Mnemonic.PadRight(18)} // {Description}{Environment.NewLine}";
+      return Mnemonic;
+    }
+
+    public virtual string ToStringWithDescription()
+    {
+      return $"{Mnemonic.PadRight(18)} // {Description}";
     }
   }
 }
