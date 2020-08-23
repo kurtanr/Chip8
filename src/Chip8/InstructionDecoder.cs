@@ -121,6 +121,12 @@ namespace Chip8
           {
             switch (decodedInstruction.kk)
             {
+              case 0x07:
+                cpuInstruction = new Instruction_Fx07(decodedInstruction);
+                break;
+              case 0x15:
+                cpuInstruction = new Instruction_Fx15(decodedInstruction);
+                break;
               case 0x55:
                 cpuInstruction = new Instruction_Fx55(decodedInstruction);
                 break;
