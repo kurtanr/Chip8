@@ -8,10 +8,10 @@ namespace Chip8
   /// </summary>
   public class Cpu
   {
-    public static readonly ushort MemorySizeInBytes = 4096;
+    public static readonly ushort MemorySizeInBytes = 0xFFF + 1;              // 4096
     public static readonly ushort MaxStackDepth = 16;
-    public static readonly ushort MemoryAddressOfFirstInstruction = 0x200;
-    public static readonly ushort MemoryAddressOfLastInstruction = 0xFFF - 1;
+    public static readonly ushort MemoryAddressOfFirstInstruction = 0x200;    // 512
+    public static readonly ushort MemoryAddressOfLastInstruction = 0xFFF - 1; // 4094
 
     #region Fields and properties
 
