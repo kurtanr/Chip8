@@ -33,7 +33,7 @@ namespace Chip8.Instructions
       {
         if(cpu.I > maxAddress)
         {
-          throw new InvalidOperationException($"Attempting to read from memory at address I (0x{cpu.I:X})." +
+          throw new InvalidOperationException($"Attempting to read from memory address I (0x{cpu.I:X})." +
             $"Highest accessible memory address is 0x{maxAddress:X}.");
         }
 
