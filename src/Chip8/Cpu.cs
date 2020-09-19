@@ -13,6 +13,9 @@ namespace Chip8
     public static readonly ushort MemoryAddressOfFirstInstruction = 0x200;    // 512
     public static readonly ushort MemoryAddressOfLastInstruction = 0xFFF - 1; // 4094
 
+    // Font data begins at 0x000
+    private static readonly FontData FontData = new FontData();
+
     #region Fields and properties
 
     /// <summary>
@@ -79,6 +82,7 @@ namespace Chip8
     public Cpu()
     {
       Reset();
+      FontData.Data.CopyTo(Memory, 0);
     }
 
     /// <summary>
