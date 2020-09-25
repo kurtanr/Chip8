@@ -17,7 +17,7 @@
     /// <inheritdoc/>
     public override void Execute(Cpu cpu, IDisplay display)
     {
-      cpu.Stack.Push(cpu.PC);
+      cpu.Stack.Push((ushort)(cpu.PC + 2));
       cpu.PC = Decoded.nnn;
     }
   }

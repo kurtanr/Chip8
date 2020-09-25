@@ -18,7 +18,7 @@ namespace Chip8.Tests.Instructions
       var instruction = new Instruction_2nnn(decodedInstruction);
       instruction.Execute(cpu, display);
 
-      Assert.That(cpu.Stack.Peek(), Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
+      Assert.That(cpu.Stack.Peek(), Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 2));
       Assert.That(cpu.PC, Is.EqualTo(decodedInstruction.nnn));
       Assert.That(instruction.Mnemonic, Is.EqualTo($"CALL 0x{decodedInstruction.nnn:X}"));
     }
