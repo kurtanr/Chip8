@@ -12,17 +12,25 @@
     void Clear();
 
     /// <summary>
-    /// Clears the pixel at row <paramref name="x"/>, column <paramref name="y"/>.
+    /// Clears the pixel at coordinates (<paramref name="x"/>, <paramref name="y"/>).
     /// </summary>
-    /// <param name="x">Pixel row.</param>
-    /// <param name="y">Pixel column.</param>
+    /// <param name="x">Pixel column.</param>
+    /// <param name="y">Pixel row.</param>
     void ClearPixel(byte x, byte y);
 
     /// <summary>
-    /// Sets the pixel at row <paramref name="x"/>, column <paramref name="y"/>.
+    /// Gets the pixel at coordinates (<paramref name="x"/>, <paramref name="y"/>).
     /// </summary>
-    /// <param name="x">Pixel row.</param>
-    /// <param name="y">Pixel column.</param>
+    /// <param name="x">Pixel column.</param>
+    /// <param name="y">Pixel row.</param>
+    /// <returns>True if pixel is set, false otherwise.</returns>
+    bool GetPixel(byte x, byte y);
+
+    /// <summary>
+    /// Sets the pixel at coordinates (<paramref name="x"/>, <paramref name="y"/>).
+    /// </summary>
+    /// <param name="x">Pixel column.</param>
+    /// <param name="y">Pixel row.</param>
     void SetPixel(byte x, byte y);
   }
 }
