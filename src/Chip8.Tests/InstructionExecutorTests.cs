@@ -10,21 +10,23 @@ namespace Chip8.Tests
   {
     private readonly Cpu _cpu = new Cpu();
     private readonly IDisplay _display = new Mock<IDisplay>(MockBehavior.Loose).Object;
+    private readonly IKeyboard _keyboard = new Mock<IKeyboard>(MockBehavior.Strict).Object;
     private readonly InstructionDecoder _instructionDecoder = new InstructionDecoder();
 
     [Test]
     public void ArgumentValidation_Works()
     {
-      Assert.DoesNotThrow(() => new InstructionExecutor(_cpu, _display, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(null, _display, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, null, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, null));
+      Assert.DoesNotThrow(() => new InstructionExecutor(_cpu, _display, _keyboard, _instructionDecoder));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(null, _display, _keyboard, _instructionDecoder));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, null, _keyboard, _instructionDecoder));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, null, _instructionDecoder));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, _keyboard, null));
     }
 
     [Test]
     public void ExecutingInstruction_WithEmptyMemory_ThrowsException()
     {
-      var instructionExecutor = new InstructionExecutor(_cpu, _display, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard, _instructionDecoder);
 
       Assert.Throws<InvalidOperationException>(() => instructionExecutor.ExecuteSingleInstruction());
     }
@@ -37,7 +39,7 @@ namespace Chip8.Tests
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
 
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard, _instructionDecoder);
       var instruction = instructionExecutor.ExecuteSingleInstruction();
 
       Assert.That(instruction, Is.InstanceOf<Instruction_00E0>());
@@ -53,7 +55,7 @@ namespace Chip8.Tests
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
 
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard, _instructionDecoder);
       var instruction = instructionExecutor.ExecuteSingleInstruction();
 
       Assert.That(instruction, Is.InstanceOf<Instruction_00EE>());

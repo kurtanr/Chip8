@@ -18,7 +18,7 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       var random = new Random();
       var number = (byte)random.Next(0, 256);

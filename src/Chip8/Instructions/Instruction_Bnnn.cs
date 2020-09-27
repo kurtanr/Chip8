@@ -15,7 +15,7 @@
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       cpu.PC = (ushort)(Decoded.nnn + cpu.V[0]);
     }

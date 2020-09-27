@@ -17,7 +17,7 @@
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       cpu.V[Decoded.x] &= cpu.V[Decoded.y];
     }

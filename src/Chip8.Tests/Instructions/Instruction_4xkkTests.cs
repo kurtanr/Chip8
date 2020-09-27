@@ -1,18 +1,16 @@
 ﻿using Chip8.Instructions;
-using Moq;
 using NUnit.Framework;
 
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class Instruction_4xkkTests
+  public class Instruction_4xkkTests : BaseInstructionTests
   {
     [TestCase(true)]
     [TestCase(false)]
     public void Executing_Instruction_4xkk_WorksAsExpected(bool vxEqualToKk)
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(0x4468);
 
       if (vxEqualToKk)
@@ -21,7 +19,7 @@ namespace Chip8.Tests.Instructions
       }
 
       var instruction = new Instruction_4xkk(decodedInstruction);
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
       var pcOffset = (vxEqualToKk == true) ? 0 : 2;
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + pcOffset));

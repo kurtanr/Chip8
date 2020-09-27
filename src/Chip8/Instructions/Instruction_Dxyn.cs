@@ -23,7 +23,7 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       if (Decoded.n == 0)
       {

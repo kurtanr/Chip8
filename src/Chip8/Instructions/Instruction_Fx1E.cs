@@ -17,7 +17,7 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       var address = (ushort)(cpu.I + cpu.V[Decoded.x]);
       var maxAddress = Cpu.MemorySizeInBytes - 1;

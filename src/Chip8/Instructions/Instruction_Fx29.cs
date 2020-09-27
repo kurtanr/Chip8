@@ -18,7 +18,7 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       var vxValue = cpu.V[Decoded.x];
       if(vxValue > 0xF)

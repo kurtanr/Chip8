@@ -1,12 +1,11 @@
 ﻿using Chip8.Instructions;
-using Moq;
 using NUnit.Framework;
 using System;
 
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class UndefinedInstructionTests
+  public class UndefinedInstructionTests : BaseInstructionTests
   {
     [Test]
     public void UndefinedInstruction_IsCorrectlyInitialized()
@@ -25,9 +24,9 @@ namespace Chip8.Tests.Instructions
     public void ExecutingUndefinedInstruction_ThrowsException()
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
 
-      Assert.Throws<InvalidOperationException>(() => new UndefinedInstruction(new DecodedInstruction(0x0)).Execute(cpu, display));
+      Assert.Throws<InvalidOperationException>(() => new UndefinedInstruction(
+        new DecodedInstruction(0x0)).Execute(cpu, MockedDisplay, MockedKeyboard));
     }
   }
 }

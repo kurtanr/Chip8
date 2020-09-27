@@ -1,12 +1,11 @@
 ﻿using Chip8.Instructions;
-using Moq;
 using NUnit.Framework;
 using System;
 
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class Instruction_8xy5Tests
+  public class Instruction_8xy5Tests : BaseInstructionTests
   {
     [TestCase(0xFE, 0x01, 0xFD, 1)]
     [TestCase(0x01, 0xFE, 0xFD, 0)]
@@ -14,13 +13,12 @@ namespace Chip8.Tests.Instructions
     public void Executing_Instruction_8xy5_WorksAsExpected(byte value1, byte value2, byte expectedResult, byte expectedVF)
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(0x8AB5);
       cpu.V[decodedInstruction.x] = value1;
       cpu.V[decodedInstruction.y] = value2;
 
       var instruction = new Instruction_8xy5(decodedInstruction);
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
       Assert.That(cpu.V[decodedInstruction.x], Is.EqualTo(expectedResult));
       Assert.That(cpu.V[0xF], Is.EqualTo(expectedVF));
@@ -31,11 +29,10 @@ namespace Chip8.Tests.Instructions
     public void Executing_Instruction_8xy5_WithVx_SetToVF_ThrowsException()
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(0x8FB5);
 
       var instruction = new Instruction_8xy5(decodedInstruction);
-      Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, display));
+      Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
     }
   }
 }

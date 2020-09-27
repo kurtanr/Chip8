@@ -1,23 +1,20 @@
 ﻿using Chip8.Instructions;
-using Moq;
 using NUnit.Framework;
-using System;
 
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class Instruction_CxkkTests
+  public class Instruction_CxkkTests : BaseInstructionTests
   {
-    [TestCase((ushort)0xC101, 0x01)]
-    [TestCase((ushort)0xC123, 0x23)]
-    public void Executing_Instruction_Cxkk_WorksAsExpected(ushort instructionCode, byte expectedMaxValue)
+    [TestCase((ushort)0xC101)]
+    [TestCase((ushort)0xC123)]
+    public void Executing_Instruction_Cxkk_WorksAsExpected(ushort instructionCode)
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(instructionCode);
 
       var instruction = new Instruction_Cxkk(decodedInstruction);
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
       Assert.That(cpu.V[decodedInstruction.x], Is.LessThanOrEqualTo(decodedInstruction.kk));
       Assert.That(instruction.Mnemonic, Is.EqualTo($"RND V{decodedInstruction.x:X}, 0x{decodedInstruction.kk:X}"));

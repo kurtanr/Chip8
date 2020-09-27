@@ -15,7 +15,7 @@ namespace Chip8.Instructions
     }
 
     /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display)
+    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       throw new InvalidOperationException($"Attempting to execute {nameof(UndefinedInstruction)}: {Mnemonic}.");
     }

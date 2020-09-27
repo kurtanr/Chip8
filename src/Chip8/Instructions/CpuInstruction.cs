@@ -24,10 +24,12 @@ namespace Chip8.Instructions
 
     /// <summary>
     /// Executes instruction using <paramref name="cpu"/> and <paramref name="display"/>.
+    /// Checks <paramref name="keyboard"/> for user input.
     /// </summary>
     /// <param name="cpu">CPU used to execute the instruction.</param>
     /// <param name="display">Display used to execute the instruction.</param>
-    public abstract void Execute(Cpu cpu, IDisplay display);
+    /// <param name="keyboard">Chip8 keyboard abstraction which is queried for user input.</param>
+    public abstract void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard);
 
     protected CpuInstruction(DecodedInstruction decodedInstruction)
     {
@@ -42,7 +44,7 @@ namespace Chip8.Instructions
 
     public virtual string ToStringWithDescription()
     {
-      return $"{Mnemonic.PadRight(18)} // {Description}";
+      return $"{Mnemonic,-18} // {Description}";
     }
   }
 }

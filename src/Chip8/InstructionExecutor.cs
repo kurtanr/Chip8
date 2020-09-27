@@ -10,26 +10,15 @@ namespace Chip8
   {
     private readonly Cpu _cpu;
     private readonly IDisplay _display;
+    private readonly IKeyboard _keyboard;
     private readonly InstructionDecoder _instructionDecoder;
 
-    public InstructionExecutor(Cpu cpu, IDisplay display, InstructionDecoder instructionDecoder)
+    public InstructionExecutor(Cpu cpu, IDisplay display, IKeyboard keyboard, InstructionDecoder instructionDecoder)
     {
-      if (cpu == null)
-      {
-        throw new ArgumentNullException(nameof(cpu));
-      }
-      if (display == null)
-      {
-        throw new ArgumentNullException(nameof(display)); 
-      }
-      if (instructionDecoder == null)
-      {
-        throw new ArgumentNullException(nameof(instructionDecoder));
-      }
-
-      _cpu = cpu;
-      _display = display;
-      _instructionDecoder = instructionDecoder;
+      _cpu = cpu ?? throw new ArgumentNullException(nameof(cpu));
+      _display = display ?? throw new ArgumentNullException(nameof(display));
+      _keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
+      _instructionDecoder = instructionDecoder ?? throw new ArgumentNullException(nameof(instructionDecoder));
     }
 
     /// <summary>
@@ -43,7 +32,7 @@ namespace Chip8
       var decodedInstruction = _instructionDecoder.Decode(_cpu.Memory[_cpu.PC], _cpu.Memory[_cpu.PC + 1]);
       var cpuInstruction = _instructionDecoder.GetCpuInstruction(decodedInstruction);
 
-      cpuInstruction.Execute(_cpu, _display);
+      cpuInstruction.Execute(_cpu, _display, _keyboard);
 
       if (!(cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn || 
             cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn))

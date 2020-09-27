@@ -1,12 +1,11 @@
 ﻿using Chip8.Instructions;
-using Moq;
 using NUnit.Framework;
 using System;
 
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class Instruction_Fx55Tests
+  public class Instruction_Fx55Tests : BaseInstructionTests
   {
     [TestCase((ushort)0xF055, (ushort)0x240)]
     [TestCase((ushort)0xF355, (ushort)0x340)]
@@ -14,7 +13,6 @@ namespace Chip8.Tests.Instructions
     public void Executing_Instruction_Fx55_WorksAsExpected(ushort instructionCode, ushort initialI)
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(instructionCode);
       cpu.I = initialI;
 
@@ -24,7 +22,7 @@ namespace Chip8.Tests.Instructions
       }
 
       var instruction = new Instruction_Fx55(decodedInstruction);
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
       Assert.That(cpu.I, Is.EqualTo(initialI + decodedInstruction.x + 1));
       for (byte i = 0; i <= 0xF; i++)
@@ -39,11 +37,10 @@ namespace Chip8.Tests.Instructions
     public void WriteToMemory_OutsideValidMemoryRange_ThrowsException(ushort instructionCode, ushort initialI)
     {
       var cpu = new Cpu { I = initialI };
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(instructionCode);
 
       var instruction = new Instruction_Fx55(decodedInstruction);
-      Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, display));
+      Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
     }
   }
 }

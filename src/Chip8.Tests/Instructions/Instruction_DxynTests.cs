@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Chip8.Tests.Instructions
 {
   [TestFixture]
-  public class Instruction_DxynTests
+  public class Instruction_DxynTests : BaseInstructionTests
   {
     [Test]
     public void Executing_Instruction_Dxyn_WorksAsExpected()
@@ -47,10 +47,10 @@ namespace Chip8.Tests.Instructions
       var display = displayMock.Object;
       var instruction = new Instruction_Dxyn(decodedInstruction);
 
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, display, MockedKeyboard);
       Assert.That(cpu.V[0xF], Is.EqualTo(0));
 
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, display, MockedKeyboard);
       Assert.That(cpu.V[0xF], Is.EqualTo(1));
 
       displayMock.VerifyAll();
@@ -61,11 +61,10 @@ namespace Chip8.Tests.Instructions
     public void Executing_Instruction_Dxy0_DoesNotUseDisplay()
     {
       var cpu = new Cpu();
-      var display = new Mock<IDisplay>(MockBehavior.Strict).Object;
       var decodedInstruction = new DecodedInstruction(0xD230);
 
       var instruction = new Instruction_Dxyn(decodedInstruction);
-      instruction.Execute(cpu, display);
+      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
     }
   }
 }
