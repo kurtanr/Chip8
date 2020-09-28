@@ -120,6 +120,22 @@ namespace Chip8
         case 0xD:
           cpuInstruction = new Instruction_Dxyn(decodedInstruction);
           break;
+        case 0xE:
+          {
+            switch (decodedInstruction.kk)
+            {
+              case 0x9E:
+                cpuInstruction = new Instruction_Ex9E(decodedInstruction);
+                break;
+              case 0xA1:
+                cpuInstruction = new Instruction_ExA1(decodedInstruction);
+                break;
+              default:
+                cpuInstruction = new UndefinedInstruction(decodedInstruction);
+                break;
+            }
+          }
+          break;
         case 0xF:
           {
             switch (decodedInstruction.kk)

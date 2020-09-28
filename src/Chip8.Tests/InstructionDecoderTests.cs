@@ -63,6 +63,9 @@ namespace Chip8.Tests
 
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xD123)), Is.InstanceOf<Instruction_Dxyn>());
 
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xE19E)), Is.InstanceOf<Instruction_Ex9E>());
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xE1A1)), Is.InstanceOf<Instruction_ExA1>());
+
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xFA07)), Is.InstanceOf<Instruction_Fx07>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xFA15)), Is.InstanceOf<Instruction_Fx15>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xFA18)), Is.InstanceOf<Instruction_Fx18>());
@@ -84,6 +87,7 @@ namespace Chip8.Tests
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x5468)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x8468)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x9468)), Is.InstanceOf<UndefinedInstruction>());
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xE101)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xF1FF)), Is.InstanceOf<UndefinedInstruction>());
     }
   }
