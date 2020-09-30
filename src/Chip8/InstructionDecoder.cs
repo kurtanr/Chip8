@@ -143,6 +143,9 @@ namespace Chip8
               case 0x07:
                 cpuInstruction = new Instruction_Fx07(decodedInstruction);
                 break;
+              case 0x0A:
+                cpuInstruction = new Instruction_Fx0A(decodedInstruction);
+                break;
               case 0x15:
                 cpuInstruction = new Instruction_Fx15(decodedInstruction);
                 break;
@@ -170,7 +173,6 @@ namespace Chip8
             }
             break;
           }
-        // TODO: add other instructions
         default:
           cpuInstruction = new UndefinedInstruction(decodedInstruction);
           break;
