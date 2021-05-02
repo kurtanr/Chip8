@@ -35,6 +35,12 @@ To provide:
 -   Disassembler able to show details about the CHIP-8 program
 -   User interface capable of loading and running CHIP-8 programs
 
+## UI Preview
+
+<p align="left">
+    <img src="images/ui-preview.png" alt="ui-preview" style="max-width:100%;">
+</p>
+
 ## References
 
 -   [Wikipedia CHIP-8 article](https://en.wikipedia.org/wiki/CHIP-8)
