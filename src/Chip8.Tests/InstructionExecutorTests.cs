@@ -11,22 +11,55 @@ namespace Chip8.Tests
     private readonly Cpu _cpu = new Cpu();
     private readonly IDisplay _display = new Mock<IDisplay>(MockBehavior.Loose).Object;
     private readonly IKeyboard _keyboard = new Mock<IKeyboard>(MockBehavior.Strict).Object;
-    private readonly InstructionDecoder _instructionDecoder = new InstructionDecoder();
 
     [Test]
-    public void ArgumentValidation_Works()
+    public void Constructor_ArgumentValidation_Works()
     {
-      Assert.DoesNotThrow(() => new InstructionExecutor(_cpu, _display, _keyboard, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(null, _display, _keyboard, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, null, _keyboard, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, null, _instructionDecoder));
-      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, _keyboard, null));
+      Assert.DoesNotThrow(() => new InstructionExecutor(_cpu, _display, _keyboard));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(null, _display, _keyboard));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, null, _keyboard));
+      Assert.Throws<ArgumentNullException>(() => new InstructionExecutor(_cpu, _display, null));
+    }
+
+    [Test]
+    public void LoadApplication_NullArgumentValidation_Works()
+    {
+      var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard);
+      Assert.Throws<ArgumentNullException>(() => instructionExecutor.LoadApplication(null));
+    }
+
+    [Test]
+    public void LoadApplication_WithMaxSize_Works()
+    {
+      var maxAllowedAppSize = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction;
+      var application = new byte[maxAllowedAppSize];
+      application[0] = 0xAB;
+      application[application.Length - 1] = 0xCD;
+
+      var cpu = new Cpu();
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
+
+      Assert.DoesNotThrow(() => instructionExecutor.LoadApplication(application));
+      Assert.That(cpu.Memory[Cpu.MemoryAddressOfFirstInstruction], Is.EqualTo(0xAB));
+      Assert.That(cpu.Memory[Cpu.MemorySizeInBytes - 1], Is.EqualTo(0xCD));
+    }
+
+    [Test]
+    public void LoadApplication_WhichExceedsMaxSize_ThrowsException()
+    {
+      var maxAllowedAppSizeExceeded = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction + 1;
+      var application = new byte[maxAllowedAppSizeExceeded];
+
+      var cpu = new Cpu();
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
+
+      Assert.Throws<ArgumentException>(() => instructionExecutor.LoadApplication(application));
     }
 
     [Test]
     public void ExecutingInstruction_WithEmptyMemory_ThrowsException()
     {
-      var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard);
 
       Assert.Throws<InvalidOperationException>(() => instructionExecutor.ExecuteSingleInstruction());
     }
@@ -39,7 +72,7 @@ namespace Chip8.Tests
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
 
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
       var instruction = instructionExecutor.ExecuteSingleInstruction();
 
       Assert.That(instruction, Is.InstanceOf<Instruction_00E0>());
@@ -55,7 +88,7 @@ namespace Chip8.Tests
 
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
 
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard, _instructionDecoder);
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
       var instruction = instructionExecutor.ExecuteSingleInstruction();
 
       Assert.That(instruction, Is.InstanceOf<Instruction_00EE>());

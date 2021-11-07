@@ -13,12 +13,29 @@ namespace Chip8
     private readonly IKeyboard _keyboard;
     private readonly InstructionDecoder _instructionDecoder;
 
-    public InstructionExecutor(Cpu cpu, IDisplay display, IKeyboard keyboard, InstructionDecoder instructionDecoder)
+    public InstructionExecutor(Cpu cpu, IDisplay display, IKeyboard keyboard)
     {
       _cpu = cpu ?? throw new ArgumentNullException(nameof(cpu));
       _display = display ?? throw new ArgumentNullException(nameof(display));
       _keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
-      _instructionDecoder = instructionDecoder ?? throw new ArgumentNullException(nameof(instructionDecoder));
+      _instructionDecoder = new InstructionDecoder();
+    }
+
+    /// <summary>
+    /// Loads application from a byte array into <see cref="Cpu.Memory"/>.
+    /// First byte of the application is set at <see cref="Cpu.MemoryAddressOfFirstInstruction"/>.
+    /// </summary>
+    /// <param name="application">Array of bytes which represents a CHIP-8 application.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="application"/> is null.</exception>
+    /// <exception cref="ArgumentException">If <paramref name="application"/> exceeds size of: <see cref="Cpu.MemorySizeInBytes"/> - <see cref="Cpu.MemoryAddressOfFirstInstruction"/>.</exception>
+    public void LoadApplication(byte[] application)
+    {
+      if(application == null)
+      {
+        throw new ArgumentNullException(nameof(application), "Cannot set Cpu.Memory to null.");
+      }
+
+      application.CopyTo(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction);
     }
 
     /// <summary>
