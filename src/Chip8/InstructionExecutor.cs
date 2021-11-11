@@ -22,23 +22,6 @@ namespace Chip8
     }
 
     /// <summary>
-    /// Loads application from a byte array into <see cref="Cpu.Memory"/>.
-    /// First byte of the application is set at <see cref="Cpu.MemoryAddressOfFirstInstruction"/>.
-    /// </summary>
-    /// <param name="application">Array of bytes which represents a CHIP-8 application.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="application"/> is null.</exception>
-    /// <exception cref="ArgumentException">If <paramref name="application"/> exceeds size of: <see cref="Cpu.MemorySizeInBytes"/> - <see cref="Cpu.MemoryAddressOfFirstInstruction"/>.</exception>
-    public void LoadApplication(byte[] application)
-    {
-      if(application == null)
-      {
-        throw new ArgumentNullException(nameof(application), "Cannot set Cpu.Memory to null.");
-      }
-
-      application.CopyTo(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction);
-    }
-
-    /// <summary>
     /// Decodes and executes instruction from memory location to which <see cref="Cpu.PC"/> is pointing.
     /// If executed instruction is not a RET/JP/CALL instruction, this method increments <see cref="Cpu.PC"/> by 2 after instruction execution.
     /// </summary>
@@ -55,6 +38,18 @@ namespace Chip8
             cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn))
       {
         _cpu.PC += 2;
+      }
+
+      // decrement delay timer
+      if (_cpu.DT > 0)
+      {
+        _cpu.DT--;
+      }
+
+      // decrement sound timer
+      if (_cpu.ST > 0)
+      {
+        _cpu.ST--;
       }
 
       return cpuInstruction;

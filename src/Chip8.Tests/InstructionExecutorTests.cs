@@ -22,41 +22,6 @@ namespace Chip8.Tests
     }
 
     [Test]
-    public void LoadApplication_NullArgumentValidation_Works()
-    {
-      var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard);
-      Assert.Throws<ArgumentNullException>(() => instructionExecutor.LoadApplication(null));
-    }
-
-    [Test]
-    public void LoadApplication_WithMaxSize_Works()
-    {
-      var maxAllowedAppSize = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction;
-      var application = new byte[maxAllowedAppSize];
-      application[0] = 0xAB;
-      application[application.Length - 1] = 0xCD;
-
-      var cpu = new Cpu();
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
-
-      Assert.DoesNotThrow(() => instructionExecutor.LoadApplication(application));
-      Assert.That(cpu.Memory[Cpu.MemoryAddressOfFirstInstruction], Is.EqualTo(0xAB));
-      Assert.That(cpu.Memory[Cpu.MemorySizeInBytes - 1], Is.EqualTo(0xCD));
-    }
-
-    [Test]
-    public void LoadApplication_WhichExceedsMaxSize_ThrowsException()
-    {
-      var maxAllowedAppSizeExceeded = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction + 1;
-      var application = new byte[maxAllowedAppSizeExceeded];
-
-      var cpu = new Cpu();
-      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
-
-      Assert.Throws<ArgumentException>(() => instructionExecutor.LoadApplication(application));
-    }
-
-    [Test]
     public void ExecutingInstruction_WithEmptyMemory_ThrowsException()
     {
       var instructionExecutor = new InstructionExecutor(_cpu, _display, _keyboard);
@@ -93,6 +58,30 @@ namespace Chip8.Tests
 
       Assert.That(instruction, Is.InstanceOf<Instruction_00EE>());
       Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
+    }
+
+    [Test]
+    public void ExecutingInstruction_DecrementsTimers()
+    {
+      var cpu = new Cpu();
+      cpu.Memory[Cpu.MemoryAddressOfFirstInstruction + 1] = 0xE0; // CLS instruction
+      cpu.Memory[Cpu.MemoryAddressOfFirstInstruction + 3] = 0xE0; // CLS instruction
+
+      // initial value of timers
+      cpu.DT = 1;
+      cpu.ST = 1;
+
+      var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
+
+      // first execution
+      instructionExecutor.ExecuteSingleInstruction();
+      Assert.That(cpu.DT, Is.EqualTo(0));
+      Assert.That(cpu.ST, Is.EqualTo(0));
+
+      // second execution
+      instructionExecutor.ExecuteSingleInstruction();
+      Assert.That(cpu.DT, Is.EqualTo(0));
+      Assert.That(cpu.ST, Is.EqualTo(0));
     }
   }
 }
