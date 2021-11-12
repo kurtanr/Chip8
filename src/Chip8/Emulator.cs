@@ -28,7 +28,7 @@ namespace Chip8
 
     /// <summary>
     /// True if application is running.
-    /// False if application is paused (see <see cref="PauseApplication"/>) or it was never started.
+    /// False if application is paused (see <see cref="PauseContinueApplication"/>) or it was never started.
     /// </summary>
     public bool IsApplicationRunning { get; private set; }
 
@@ -93,19 +93,22 @@ namespace Chip8
     }
 
     /// <summary>
-    /// Pauses the application if it is running.
-    /// Unpauses the application if it is paused.
+    /// Pauses the application if it is running.<br></br>
+    /// Continues with execution of the application if it is paused.<br></br>
     /// </summary>
-    public void PauseApplication()
+    /// <exception cref="InvalidOperationException">If <see cref="IsApplicationLoaded"/> is false or application was loaded but never started.</exception>
+    public void PauseContinueApplication()
     {
-      if (IsApplicationRunning)
+      if (!IsApplicationLoaded)
       {
-        IsApplicationRunning = false;
+        throw new InvalidOperationException("Cannot pause/continue application because application is not loaded.");
       }
-      if(!IsApplicationRunning && IsApplicationLoaded)
+      if (_executeCycleTask == null)
       {
-        IsApplicationRunning = true;
+        throw new InvalidOperationException("Cannot pause/continue application because application was never started.");
       }
+
+      IsApplicationRunning = !IsApplicationRunning;
     }
 
     /// <summary>
@@ -161,7 +164,6 @@ namespace Chip8
         while (IsApplicationRunning)
         {
           ExecuteCycleCore();
-          Thread.Sleep(16);
         }
       }
     }
@@ -169,6 +171,7 @@ namespace Chip8
     private void ExecuteCycleCore()
     {
       _instructionExecutor.ExecuteSingleInstruction();
+      Thread.Sleep(16);
     }
   }
 }

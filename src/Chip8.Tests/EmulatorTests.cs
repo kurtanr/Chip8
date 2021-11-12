@@ -1,6 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 
 namespace Chip8.Tests
 {
@@ -74,17 +75,17 @@ namespace Chip8.Tests
     [Test]
     public void RunApplication_WhichIsNotLoaded_ThrowsException()
     {
-      var maxAllowedAppSizeExceeded = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction + 1;
-      var application = new byte[maxAllowedAppSizeExceeded];
-
       Assert.Throws<InvalidOperationException>(() => _emulator.RunApplication());
     }
 
-    [Test]
-    public void RunApplication_WithValidApplication_SetsIsApplicationRunning()
+    [TestCase(0)]
+    [TestCase(100)]
+    public async Task RunApplication_WithValidApplication_SetsIsApplicationRunning(int waitInMs)
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
       _emulator.RunApplication();
+
+      await Task.Delay(waitInMs);
 
       Assert.That(_emulator.IsApplicationRunning, Is.True);
     }
@@ -96,6 +97,74 @@ namespace Chip8.Tests
       _emulator.RunApplication();
 
       Assert.DoesNotThrow(() => _emulator.RunApplication());
+    }
+
+    #endregion
+
+    #region PauseContinueApplication
+
+    [Test]
+    public void PauseContinueApplication_WhichIsNotLoaded_ThrowsException()
+    {
+      Assert.Throws<InvalidOperationException>(() => _emulator.PauseContinueApplication());
+    }
+
+    [Test]
+    public void PauseContinueApplication_WhichWasNeverStarted_ThrowsException()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+
+      Assert.Throws<InvalidOperationException>(() => _emulator.PauseContinueApplication());
+    }
+
+    [TestCase(0)]
+    [TestCase(100)]
+    public async Task PauseContinueApplication_WithValidApplication_TogglesIsApplicationRunning(int waitInMs)
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunApplication();
+
+      await Task.Delay(waitInMs);
+      Assert.That(_emulator.IsApplicationRunning, Is.True);
+
+      _emulator.PauseContinueApplication();
+
+      await Task.Delay(waitInMs);
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+
+      _emulator.PauseContinueApplication();
+
+      await Task.Delay(waitInMs);
+      Assert.That(_emulator.IsApplicationRunning, Is.True);
+    }
+
+    #endregion
+
+    #region ExecuteSingleCycle
+
+    [Test]
+    public void ExecuteSingleCycle_WithApplicationWhichIsNotLoaded_ThrowsException()
+    {
+      Assert.Throws<InvalidOperationException>(() => _emulator.ExecuteSingleCycle());
+    }
+
+    [Test]
+    public void ExecuteSingleCycle_WithApplicationWhichIsRunning_ThrowsException()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunApplication();
+
+      Assert.Throws<InvalidOperationException>(() => _emulator.ExecuteSingleCycle());
+    }
+
+    [Test]
+    public void ExecuteSingleCycle_WithValidApplication_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.ExecuteSingleCycle();
+
+      Assert.That(_cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 2));
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
     }
 
     #endregion
