@@ -85,7 +85,7 @@ namespace Chip8.Tests
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
       _emulator.RunApplication();
 
-      await Task.Delay(waitInMs);
+      await Task.Delay(waitInMs).ConfigureAwait(false);
 
       Assert.That(_emulator.IsApplicationRunning, Is.True);
     }
@@ -124,17 +124,17 @@ namespace Chip8.Tests
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
       _emulator.RunApplication();
 
-      await Task.Delay(waitInMs);
+      await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.True);
 
       _emulator.PauseContinueApplication();
 
-      await Task.Delay(waitInMs);
+      await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.False);
 
       _emulator.PauseContinueApplication();
 
-      await Task.Delay(waitInMs);
+      await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.True);
     }
 
