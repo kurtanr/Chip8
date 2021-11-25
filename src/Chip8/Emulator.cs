@@ -142,13 +142,7 @@ namespace Chip8
       _executeCycleCancellationTokenSource.Cancel();
       if (_executeCycleTask != null)
       {
-        try
-        {
-          _executeCycleTask.Wait();
-        }
-        catch (AggregateException e) when (e.InnerException is OperationCanceledException)
-        {
-        };
+        _executeCycleTask.Wait();
       }
 
       _executeCycleCancellationTokenSource.Dispose();

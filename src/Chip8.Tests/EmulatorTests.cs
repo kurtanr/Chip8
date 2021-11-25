@@ -172,10 +172,11 @@ namespace Chip8.Tests
     #region Dispose
 
     [Test]
-    public void Dispose_WithRunningApplication_Works()
+    public void Dispose_WithPausedApplication_Works()
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
       _emulator.RunApplication();
+      _emulator.PauseContinueApplication();
       _emulator.Dispose();
 
       Assert.That(_emulator.IsApplicationRunning, Is.False);
