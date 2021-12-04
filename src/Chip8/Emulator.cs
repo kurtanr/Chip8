@@ -26,9 +26,11 @@ namespace Chip8
     private readonly CancellationTokenSource _executeCycleCancellationTokenSource;
     private Task _executeCycleTask;
 
+    private const int DefaultDelay = 15;
+
     /// <summary>
     /// True if application is running.
-    /// False if application is paused (see <see cref="PauseContinueApplication"/>) or it was never started.
+    /// False if application is paused (see <see cref="PauseApplication"/>), stopped (see <see cref="StopApplication"/>) or it was never started.
     /// </summary>
     public bool IsApplicationRunning { get; private set; }
 
@@ -63,15 +65,18 @@ namespace Chip8
         throw new ArgumentNullException(nameof(application), "Cannot set Cpu.Memory to null.");
       }
 
+      _cpu.Reset();
+      _display.Clear();
       application.CopyTo(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction);
       IsApplicationLoaded = true;
     }
 
     /// <summary>
-    /// Runs the application and sets the <see cref="IsApplicationRunning"/> to true.
+    /// Runs the application and sets the <see cref="IsApplicationRunning"/> to true.<br></br>
+    /// Continues with execution of the application if it is paused.
     /// </summary>
     /// <exception cref="InvalidOperationException">If <see cref="IsApplicationLoaded"/> is false.</exception>
-    public void RunApplication()
+    public void RunContinueApplication()
     {
       if (!IsApplicationLoaded)
       {
@@ -93,22 +98,51 @@ namespace Chip8
     }
 
     /// <summary>
-    /// Pauses the application if it is running.<br></br>
-    /// Continues with execution of the application if it is paused.<br></br>
+    /// Pauses the application if it is running.
     /// </summary>
     /// <exception cref="InvalidOperationException">If <see cref="IsApplicationLoaded"/> is false or application was loaded but never started.</exception>
-    public void PauseContinueApplication()
+    public void PauseApplication()
     {
       if (!IsApplicationLoaded)
       {
-        throw new InvalidOperationException("Cannot pause/continue application because application is not loaded.");
+        throw new InvalidOperationException("Cannot pause application because application is not loaded.");
       }
       if (_executeCycleTask == null)
       {
-        throw new InvalidOperationException("Cannot pause/continue application because application was never started.");
+        throw new InvalidOperationException("Cannot pause application because application was never started.");
       }
+      if (IsApplicationRunning)
+      {
+        IsApplicationRunning = false;
+      }
+    }
 
-      IsApplicationRunning = !IsApplicationRunning;
+    /// <summary>
+    /// Stops the application if it is running.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">If <see cref="IsApplicationLoaded"/> is false or application was loaded but never started.</exception>
+    public void StopApplication()
+    {
+      if (!IsApplicationLoaded)
+      {
+        throw new InvalidOperationException("Cannot stop application because application is not loaded.");
+      }
+      if (_executeCycleTask == null)
+      {
+        throw new InvalidOperationException("Cannot stop application because application was never started.");
+      }
+      if (IsApplicationRunning)
+      {
+        IsApplicationRunning = false;
+
+        Array temp = Array.CreateInstance(typeof(byte), Cpu.MemorySizeInBytes);
+        Array.Copy(_cpu.Memory, temp, Cpu.MemorySizeInBytes);
+
+        _cpu.Reset();
+        temp.CopyTo(_cpu.Memory, 0);
+
+        _display.Clear();
+      }
     }
 
     /// <summary>
@@ -126,7 +160,8 @@ namespace Chip8
       {
         throw new InvalidOperationException("Cannot execute single cycle because application is running.");
       }
-      ExecuteCycleCore();
+      _instructionExecutor.ExecuteSingleInstruction();
+      Thread.Sleep(DefaultDelay);
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -157,15 +192,20 @@ namespace Chip8
       {
         while (IsApplicationRunning)
         {
-          ExecuteCycleCore();
+          // Execute 10 instructions per cycle
+          for(int i = 0; i < 10; i++)
+          {
+            if (IsApplicationRunning)
+            {
+              _instructionExecutor.ExecuteSingleInstruction();
+            }
+          }
+          if (IsApplicationRunning)
+          {
+            Thread.Sleep(DefaultDelay);
+          }
         }
       }
-    }
-
-    private void ExecuteCycleCore()
-    {
-      _instructionExecutor.ExecuteSingleInstruction();
-      Thread.Sleep(16);
     }
   }
 }

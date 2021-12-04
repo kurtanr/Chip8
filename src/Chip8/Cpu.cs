@@ -86,7 +86,7 @@ namespace Chip8
     }
 
     /// <summary>
-    /// Resets all the CPU registers to the default value.
+    /// Resets memory and all the CPU registers to the default value.
     /// </summary>
     public void Reset()
     {
@@ -97,7 +97,7 @@ namespace Chip8
         V[i] = 0;
       }
 
-      PC = 0x200;
+      PC = MemoryAddressOfFirstInstruction;
       I = 0;
       DT = ST = 0;
 

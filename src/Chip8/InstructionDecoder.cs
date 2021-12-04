@@ -173,8 +173,8 @@ namespace Chip8
             }
             break;
           }
+
         default:
-          cpuInstruction = new UndefinedInstruction(decodedInstruction);
           break;
       }
 

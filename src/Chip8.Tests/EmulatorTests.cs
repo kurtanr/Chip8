@@ -70,20 +70,20 @@ namespace Chip8.Tests
 
     #endregion
 
-    #region RunApplication
+    #region RunContinueApplication
 
     [Test]
-    public void RunApplication_WhichIsNotLoaded_ThrowsException()
+    public void RunContinueApplication_WhichIsNotLoaded_ThrowsException()
     {
-      Assert.Throws<InvalidOperationException>(() => _emulator.RunApplication());
+      Assert.Throws<InvalidOperationException>(() => _emulator.RunContinueApplication());
     }
 
     [TestCase(0)]
     [TestCase(100)]
-    public async Task RunApplication_WithValidApplication_SetsIsApplicationRunning(int waitInMs)
+    public async Task RunContinueApplication_WithLoadedApplication_SetsIsApplicationRunningToTrue(int waitInMs)
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
-      _emulator.RunApplication();
+      _emulator.RunContinueApplication();
 
       await Task.Delay(waitInMs).ConfigureAwait(false);
 
@@ -91,51 +91,110 @@ namespace Chip8.Tests
     }
 
     [Test]
-    public void RunApplication_MultipleTimes_WithValidApplication_Works()
+    public void RunContinueApplication_MultipleTimes_WithLoadedApplication_Works()
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
-      _emulator.RunApplication();
+      _emulator.RunContinueApplication();
 
-      Assert.DoesNotThrow(() => _emulator.RunApplication());
+      Assert.DoesNotThrow(() => _emulator.RunContinueApplication());
     }
 
     #endregion
 
-    #region PauseContinueApplication
+    #region PauseApplication
 
     [Test]
-    public void PauseContinueApplication_WhichIsNotLoaded_ThrowsException()
+    public void PauseApplication_WhichIsNotLoaded_ThrowsException()
     {
-      Assert.Throws<InvalidOperationException>(() => _emulator.PauseContinueApplication());
+      Assert.Throws<InvalidOperationException>(() => _emulator.PauseApplication());
     }
 
     [Test]
-    public void PauseContinueApplication_WhichWasNeverStarted_ThrowsException()
+    public void PauseApplication_WhichWasNeverStarted_ThrowsException()
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
 
-      Assert.Throws<InvalidOperationException>(() => _emulator.PauseContinueApplication());
+      Assert.Throws<InvalidOperationException>(() => _emulator.PauseApplication());
     }
 
     [TestCase(0)]
     [TestCase(100)]
-    public async Task PauseContinueApplication_WithValidApplication_TogglesIsApplicationRunning(int waitInMs)
+    public async Task PauseApplication_WithRunningApplication_SetsIsApplicationRunningToFalse(int waitInMs)
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
-      _emulator.RunApplication();
+      _emulator.RunContinueApplication();
 
       await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.True);
 
-      _emulator.PauseContinueApplication();
+      _emulator.PauseApplication();
 
       await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.False);
 
-      _emulator.PauseContinueApplication();
+      _emulator.RunContinueApplication();
 
       await Task.Delay(waitInMs).ConfigureAwait(false);
       Assert.That(_emulator.IsApplicationRunning, Is.True);
+    }
+
+    [Test]
+    public void PauseApplication_MultipleTimes_WithRunningApplication_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunContinueApplication();
+      _emulator.PauseApplication();
+
+      Assert.DoesNotThrow(() => _emulator.PauseApplication());
+    }
+
+    #endregion
+
+    #region StopApplication
+
+    [Test]
+    public void StopApplication_WhichIsNotLoaded_ThrowsException()
+    {
+      Assert.Throws<InvalidOperationException>(() => _emulator.StopApplication());
+    }
+
+    [Test]
+    public void StopApplication_WhichWasNeverStarted_ThrowsException()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+
+      Assert.Throws<InvalidOperationException>(() => _emulator.StopApplication());
+    }
+
+    [TestCase(0)]
+    [TestCase(100)]
+    public async Task StopApplication_WithRunningApplication_SetsIsApplicationRunningToFalse(int waitInMs)
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunContinueApplication();
+
+      await Task.Delay(waitInMs).ConfigureAwait(false);
+      Assert.That(_emulator.IsApplicationRunning, Is.True);
+
+      _emulator.StopApplication();
+
+      await Task.Delay(waitInMs).ConfigureAwait(false);
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+
+      _emulator.RunContinueApplication();
+
+      await Task.Delay(waitInMs).ConfigureAwait(false);
+      Assert.That(_emulator.IsApplicationRunning, Is.True);
+    }
+
+    [Test]
+    public void StopApplication_MultipleTimes_WithRunningApplication_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunContinueApplication();
+      _emulator.StopApplication();
+
+      Assert.DoesNotThrow(() => _emulator.StopApplication());
     }
 
     #endregion
@@ -152,7 +211,7 @@ namespace Chip8.Tests
     public void ExecuteSingleCycle_WithApplicationWhichIsRunning_ThrowsException()
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
-      _emulator.RunApplication();
+      _emulator.RunContinueApplication();
 
       Assert.Throws<InvalidOperationException>(() => _emulator.ExecuteSingleCycle());
     }
@@ -175,8 +234,19 @@ namespace Chip8.Tests
     public void Dispose_WithPausedApplication_Works()
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
-      _emulator.RunApplication();
-      _emulator.PauseContinueApplication();
+      _emulator.RunContinueApplication();
+      _emulator.PauseApplication();
+      _emulator.Dispose();
+
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+    }
+
+    [Test]
+    public void Dispose_WithStoppedApplication_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunContinueApplication();
+      _emulator.StopApplication();
       _emulator.Dispose();
 
       Assert.That(_emulator.IsApplicationRunning, Is.False);
