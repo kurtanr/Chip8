@@ -199,6 +199,29 @@ namespace Chip8.Tests
 
     #endregion
 
+    #region GetApplication
+
+    [Test]
+    public void GetApplication_WithLoadedApplication_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+
+      var application = _emulator.GetApplication();
+
+      CollectionAssert.AreEqual(new byte[] { 0x00, 0xE0, 0x12 }, application);
+    }
+
+    [Test]
+    public void GetApplication_WithNoApplicationLoaded_ReturnsSingleZeroByte()
+    {
+      var application = _emulator.GetApplication();
+
+      Assert.That(application.Length, Is.EqualTo(1));
+      Assert.That(application[0], Is.EqualTo(0));
+    }
+
+    #endregion
+
     #region ExecuteSingleCycle
 
     [Test]

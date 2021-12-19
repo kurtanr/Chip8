@@ -24,7 +24,7 @@ namespace Chip8
     /// Converts instance of <see cref="DecodedInstruction"/> into an instance of <see cref="CpuInstruction"/>.
     /// </summary>
     /// <param name="decodedInstruction">Decoded 2 bytes of memory.</param>
-    /// <returns>Concrete Cpu instruction or <see cref="UndefinedInstruction"/> if instruction cannot be determined.</returns>
+    /// <returns>Concrete CPU instruction or <see cref="UndefinedInstruction"/> if instruction cannot be determined.</returns>
     public CpuInstruction GetCpuInstruction(DecodedInstruction decodedInstruction)
     {
       CpuInstruction cpuInstruction = null;

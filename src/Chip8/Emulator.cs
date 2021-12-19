@@ -146,6 +146,29 @@ namespace Chip8
     }
 
     /// <summary>
+    /// Returns application as byte array.
+    /// Application is <see cref="Cpu.Memory"/> content starting at <see cref="Cpu.MemoryAddressOfFirstInstruction"/>,
+    /// and ending at the last non-zero byte.
+    /// </summary>
+    /// <returns>Application represented as byte array.</returns>
+    public byte[] GetApplication()
+    {
+      var indexOfLastNonZeroByte = Cpu.MemoryAddressOfFirstInstruction;
+      for (ushort i = (ushort)(Cpu.MemoryAddressOfLastInstruction + 1); i >= Cpu.MemoryAddressOfFirstInstruction; i--)
+      {
+        if(_cpu.Memory[i] != 0)
+        {
+          indexOfLastNonZeroByte = i;
+          break;
+        }
+      }
+
+      Array result = Array.CreateInstance(typeof(byte), indexOfLastNonZeroByte - Cpu.MemoryAddressOfFirstInstruction + 1);
+      Array.Copy(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction, result, 0, result.Length);
+      return (byte[])result;
+    }
+
+    /// <summary>
     /// Executes single CPU cycle (single instruction).
     /// Method can be called only if application is loaded and not running (either paused or not started).
     /// </summary>
