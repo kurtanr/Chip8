@@ -168,6 +168,44 @@ namespace Chip8.Tests
 
     [TestCase(0)]
     [TestCase(100)]
+    public async Task StopApplication_WithPausedApplication_Works(int waitInMs)
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.RunContinueApplication();
+
+      await Task.Delay(waitInMs).ConfigureAwait(false);
+      Assert.That(_emulator.IsApplicationRunning, Is.True);
+      Assert.That(_emulator.IsApplicationPaused, Is.False);
+
+      _emulator.PauseApplication();
+
+      await Task.Delay(waitInMs).ConfigureAwait(false);
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+      Assert.That(_emulator.IsApplicationPaused, Is.True);
+
+      _emulator.StopApplication();
+
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+      Assert.That(_emulator.IsApplicationPaused, Is.False);
+    }
+
+    [Test]
+    public void StopApplication_WithApplicationWhoseSingleCycleWasExecuted_Works()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      _emulator.ExecuteSingleCycle();
+
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+      Assert.That(_emulator.IsApplicationPaused, Is.True);
+
+      _emulator.StopApplication();
+
+      Assert.That(_emulator.IsApplicationRunning, Is.False);
+      Assert.That(_emulator.IsApplicationPaused, Is.False);
+    }
+
+    [TestCase(0)]
+    [TestCase(100)]
     public async Task StopApplication_WithRunningApplication_SetsIsApplicationRunningToFalse(int waitInMs)
     {
       _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
@@ -247,6 +285,21 @@ namespace Chip8.Tests
 
       Assert.That(_cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + 2));
       Assert.That(_emulator.IsApplicationRunning, Is.False);
+      Assert.That(_emulator.IsApplicationPaused, Is.True);
+    }
+
+    #endregion
+
+    #region GetValueOfCpuRegisters
+
+    [Test]
+    public void GetValueOfCpuRegisters_ReturnsCorrectPcValue()
+    {
+      _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+
+      var valueOfRegisters = _emulator.GetValueOfCpuRegisters();
+
+      Assert.That(valueOfRegisters, Contains.Substring($"{nameof(Cpu.PC)} = 0x{Cpu.MemoryAddressOfFirstInstruction:X}"));
     }
 
     #endregion

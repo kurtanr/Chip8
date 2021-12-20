@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Chip8
     private readonly IDisplay _display;
     private readonly IKeyboard _keyboard;
     private readonly InstructionExecutor _instructionExecutor;
+    private readonly StringBuilder _stringBuilder = new StringBuilder();
 
     private bool _isDisposed;
 
@@ -30,9 +32,14 @@ namespace Chip8
 
     /// <summary>
     /// True if application is running.
-    /// False if application is paused (see <see cref="PauseApplication"/>), stopped (see <see cref="StopApplication"/>) or it was never started.
+    /// False if application is paused (see <see cref="PauseApplication"/> and <see cref="IsApplicationPaused"/>), stopped (see <see cref="StopApplication"/>) or it was never started.
     /// </summary>
     public bool IsApplicationRunning { get; private set; }
+
+    /// <summary>
+    /// True if application is paused.
+    /// </summary>
+    public bool IsApplicationPaused { get; private set; }
 
     /// <summary>
     /// True if application is loaded.
@@ -95,6 +102,7 @@ namespace Chip8
       }
 
       IsApplicationRunning = true;
+      IsApplicationPaused = false;
     }
 
     /// <summary>
@@ -114,6 +122,7 @@ namespace Chip8
       if (IsApplicationRunning)
       {
         IsApplicationRunning = false;
+        IsApplicationPaused = true;
       }
     }
 
@@ -127,13 +136,14 @@ namespace Chip8
       {
         throw new InvalidOperationException("Cannot stop application because application is not loaded.");
       }
-      if (_executeCycleTask == null)
+      if (_executeCycleTask == null && !IsApplicationPaused)
       {
         throw new InvalidOperationException("Cannot stop application because application was never started.");
       }
-      if (IsApplicationRunning)
+      if (IsApplicationRunning || IsApplicationPaused)
       {
         IsApplicationRunning = false;
+        IsApplicationPaused = false;
 
         Array temp = Array.CreateInstance(typeof(byte), Cpu.MemorySizeInBytes);
         Array.Copy(_cpu.Memory, temp, Cpu.MemorySizeInBytes);
@@ -156,7 +166,7 @@ namespace Chip8
       var indexOfLastNonZeroByte = Cpu.MemoryAddressOfFirstInstruction;
       for (ushort i = (ushort)(Cpu.MemoryAddressOfLastInstruction + 1); i >= Cpu.MemoryAddressOfFirstInstruction; i--)
       {
-        if(_cpu.Memory[i] != 0)
+        if (_cpu.Memory[i] != 0)
         {
           indexOfLastNonZeroByte = i;
           break;
@@ -185,6 +195,28 @@ namespace Chip8
       }
       _instructionExecutor.ExecuteSingleInstruction();
       Thread.Sleep(DefaultDelay);
+      IsApplicationPaused = true;
+    }
+
+    /// <summary>
+    /// Returns a string containing value of all the <see cref="Cpu"/> registers.
+    /// </summary>
+    /// <returns>String containing value of all the <see cref="Cpu"/> registers.</returns>
+    public string GetValueOfCpuRegisters()
+    {
+      _stringBuilder.Clear();
+
+      _stringBuilder.Append($"PC = 0x{_cpu.PC:X}{Environment.NewLine}");
+      _stringBuilder.Append($"I  = 0x{_cpu.I:X}{Environment.NewLine}");
+      _stringBuilder.Append($"DT = 0x{_cpu.DT:X}{Environment.NewLine}");
+      _stringBuilder.Append($"ST = 0x{_cpu.ST:X}{Environment.NewLine}");
+
+      for (int i = 0; i <= 15; i++)
+      {
+        _stringBuilder.Append($"V{i:X} = {_cpu.V[i]}{Environment.NewLine}");
+      }
+
+      return _stringBuilder.ToString();
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -196,6 +228,7 @@ namespace Chip8
       }
 
       IsApplicationRunning = false;
+      IsApplicationPaused = false;
 
       _executeCycleCancellationTokenSource.Cancel();
       if (_executeCycleTask != null)
@@ -216,7 +249,7 @@ namespace Chip8
         while (IsApplicationRunning)
         {
           // Execute 10 instructions per cycle
-          for(int i = 0; i < 10; i++)
+          for (int i = 0; i < 10; i++)
           {
             if (IsApplicationRunning)
             {
