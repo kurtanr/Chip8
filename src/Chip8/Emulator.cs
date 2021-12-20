@@ -55,7 +55,19 @@ namespace Chip8
 
       _instructionExecutor = new InstructionExecutor(cpu, display, keyboard);
       _executeCycleCancellationTokenSource = new CancellationTokenSource();
+    }
 
+    /// <summary>
+    /// Resets the <see cref="Cpu"/> and clears the <see cref="IDisplay"/> used by the emulator.
+    /// </summary>
+    public void Reset()
+    {
+      _cpu.Reset();
+      _display.Clear();
+
+      IsApplicationLoaded = false;
+      IsApplicationRunning = false;
+      IsApplicationPaused = false;
     }
 
     /// <summary>
@@ -72,8 +84,8 @@ namespace Chip8
         throw new ArgumentNullException(nameof(application), "Cannot set Cpu.Memory to null.");
       }
 
-      _cpu.Reset();
-      _display.Clear();
+      Reset();
+
       application.CopyTo(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction);
       IsApplicationLoaded = true;
     }

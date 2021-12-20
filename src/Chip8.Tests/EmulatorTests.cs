@@ -38,6 +38,32 @@ namespace Chip8.Tests
       Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, _display, null));
     }
 
+    #region Reset
+
+    [Test]
+    public void Reset_WithLoadedApplication_Works()
+    {
+      var displayMock = new Mock<IDisplay>(MockBehavior.Strict);
+      displayMock.Setup(x => x.Clear());
+
+      var emulator = new Emulator(_cpu, displayMock.Object, _keyboard);
+      emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+      displayMock.Verify(x => x.Clear(), Times.Once);
+
+      emulator.ExecuteSingleCycle();
+      displayMock.Verify(x => x.Clear(), Times.Exactly(2));
+
+      emulator.Reset();
+      displayMock.Verify(x => x.Clear(), Times.Exactly(3));
+
+      Assert.That(_cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
+      Assert.That(emulator.IsApplicationLoaded, Is.False);
+      Assert.That(emulator.IsApplicationRunning, Is.False);
+      Assert.That(emulator.IsApplicationPaused, Is.False);
+    }
+
+    #endregion
+
     #region LoadApplication
 
     [Test]
