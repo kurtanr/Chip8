@@ -218,14 +218,15 @@ namespace Chip8
     {
       _stringBuilder.Clear();
 
-      _stringBuilder.Append($"PC = 0x{_cpu.PC:X}{Environment.NewLine}");
-      _stringBuilder.Append($"I  = 0x{_cpu.I:X}{Environment.NewLine}");
-      _stringBuilder.Append($"DT = 0x{_cpu.DT:X}{Environment.NewLine}");
-      _stringBuilder.Append($"ST = 0x{_cpu.ST:X}{Environment.NewLine}");
+      // Hexadecimal value is padded with 5 characters on the right
+      _stringBuilder.Append($"PC = {$"0x{_cpu.PC:X}",-5} ({_cpu.PC}){Environment.NewLine}");
+      _stringBuilder.Append($"I  = {$"0x{_cpu.I:X}",-5} ({_cpu.I}){Environment.NewLine}");
+      _stringBuilder.Append($"DT = {$"0x{_cpu.DT:X}",-5} ({_cpu.DT}){Environment.NewLine}");
+      _stringBuilder.Append($"ST = {$"0x{_cpu.ST:X}",-5} ({_cpu.ST}){Environment.NewLine}");
 
       for (int i = 0; i <= 15; i++)
       {
-        _stringBuilder.Append($"V{i:X} = {_cpu.V[i]}{Environment.NewLine}");
+        _stringBuilder.Append($"V{i:X} = {$"0x{_cpu.V[i]:X}",-5} ({_cpu.V[i]}){Environment.NewLine}");
       }
 
       return _stringBuilder.ToString();

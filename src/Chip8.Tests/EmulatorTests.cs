@@ -325,7 +325,10 @@ namespace Chip8.Tests
 
       var valueOfRegisters = _emulator.GetValueOfCpuRegisters();
 
-      Assert.That(valueOfRegisters, Contains.Substring($"{nameof(Cpu.PC)} = 0x{Cpu.MemoryAddressOfFirstInstruction:X}"));
+      Assert.That(valueOfRegisters, Contains.Substring(
+        $"{nameof(Cpu.PC)} = 0x{Cpu.MemoryAddressOfFirstInstruction:X} ({Cpu.MemoryAddressOfFirstInstruction})"));
+
+      Assert.That(valueOfRegisters, Contains.Substring("V0 = 0x0   (0)"));
     }
 
     #endregion

@@ -36,14 +36,12 @@ namespace Chip8.Tests
       {
         var application = File.ReadAllBytes(file);
         var instructionDecoder = new InstructionDecoder();
-        ushort address = Cpu.MemoryAddressOfFirstInstruction;
 
         var instructions = new List<string>();
         for (int i = 0; i < application.Length - 1; i += 2)
         {
-          var instruction = GetInstruction(application, i, address, instructionDecoder);
+          var instruction = GetInstruction(application, i, instructionDecoder);
           instructions.Add(instruction);
-          address = (ushort)(address + 2);
         }
 
         var codeFilePath = $"{file}.c8";
@@ -53,7 +51,7 @@ namespace Chip8.Tests
       }
     }
 
-    private string GetInstruction(byte[] application, int i, ushort address, InstructionDecoder instructionDecoder)
+    private string GetInstruction(byte[] application, int i, InstructionDecoder instructionDecoder)
     {
       var decodedInstruction = instructionDecoder.Decode(application[i], application[i + 1]);
       var cpuInstruction = instructionDecoder.GetCpuInstruction(decodedInstruction);
