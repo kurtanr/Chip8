@@ -1,4 +1,5 @@
 ﻿using Chip8.Instructions;
+using System;
 using System.Globalization;
 using System.Linq;
 
@@ -160,7 +161,7 @@ namespace Chip8
         _ when instruction.StartsWith("0x") =>
           new DecodedInstruction(GetNnn(instruction)),
 
-        // TODO: throw exception?
+        // e.g. empty line
         _ => new DecodedInstruction(0x0000)
       };
 
@@ -224,25 +225,25 @@ namespace Chip8
 
     private byte ParseRegister(string instruction)
     {
-      return byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1),
+      return byte.Parse(instruction.Substring(instruction.IndexOf("v", StringComparison.InvariantCulture) + 1, 1),
         NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
 
     private byte ParseLastRegister(string instruction)
     {
-      return byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1),
+      return byte.Parse(instruction.Substring(instruction.LastIndexOf("v", StringComparison.InvariantCulture) + 1, 1),
         NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
 
     private byte ParseAddress(string instruction)
     {
-      return byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2),
+      return byte.Parse(instruction.Substring(instruction.IndexOf("0x", StringComparison.InvariantCulture) + 2),
         NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
 
     private ushort ParseAddressUShort(string instruction)
     {
-      return ushort.Parse(instruction.Substring(instruction.IndexOf("0x") + 2),
+      return ushort.Parse(instruction.Substring(instruction.IndexOf("0x", StringComparison.InvariantCulture) + 2),
         NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
   }

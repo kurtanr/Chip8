@@ -194,28 +194,91 @@ namespace Chip8.Tests
       VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_ExA1));
     }
 
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA07)), Is.InstanceOf<Instruction_Fx07>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xF10A)), Is.InstanceOf<Instruction_Fx0A>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA15)), Is.InstanceOf<Instruction_Fx15>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA18)), Is.InstanceOf<Instruction_Fx18>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA1E)), Is.InstanceOf<Instruction_Fx1E>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA29)), Is.InstanceOf<Instruction_Fx29>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA33)), Is.InstanceOf<Instruction_Fx33>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xF155)), Is.InstanceOf<Instruction_Fx55>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xF165)), Is.InstanceOf<Instruction_Fx65>());
-
-    /*[Test]
-    public void UndefinedCpuInstructions_AreDecodedAsUndefinedInstructions()
+    [TestCase("LD V1, DT", 0x1)]
+    [TestCase("LD VA, DT", 0xA)]
+    public void Instruction_Fx07_IsCorrectlyEncoded(string mnemonic, byte expectedX)
     {
-      var instructionDecoder = new InstructionDecoder();
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx07));
+    }
 
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x0000)), Is.InstanceOf<UndefinedInstruction>());
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x5468)), Is.InstanceOf<UndefinedInstruction>());
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x8468)), Is.InstanceOf<UndefinedInstruction>());
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x9468)), Is.InstanceOf<UndefinedInstruction>());
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xE101)), Is.InstanceOf<UndefinedInstruction>());
-      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xF1FF)), Is.InstanceOf<UndefinedInstruction>());
-    }*/
+    [TestCase("LD V1, K", 0x1)]
+    [TestCase("LD VA, K", 0xA)]
+    public void Instruction_Fx0A_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx0A));
+    }
+
+    [TestCase("LD DT, V1", 0x1)]
+    [TestCase("LD DT, VA", 0xA)]
+    public void Instruction_Fx15_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx15));
+    }
+
+    [TestCase("LD ST, V1", 0x1)]
+    [TestCase("LD ST, VA", 0xA)]
+    public void Instruction_Fx18_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx18));
+    }
+
+    [TestCase("ADD I, V1", 0x1)]
+    [TestCase("ADD I, VA", 0xA)]
+    public void Instruction_Fx1E_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx1E));
+    }
+
+    [TestCase("LD F, V1", 0x1)]
+    [TestCase("LD F, VA", 0xA)]
+    public void Instruction_Fx29_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx29));
+    }
+
+    [TestCase("LD B, V1", 0x1)]
+    [TestCase("LD B, VA", 0xA)]
+    public void Instruction_Fx33_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx33));
+    }
+
+    [TestCase("LD [I], V1", 0x1)]
+    [TestCase("LD [I], VA", 0xA)]
+    public void Instruction_Fx55_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx55));
+    }
+
+    [TestCase("LD V1, [I]", 0x1)]
+    [TestCase("LD VA, [I]", 0xA)]
+    public void Instruction_Fx65_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Fx65));
+    }
+
+    [TestCase("0x01EE", (ushort)0x01EE)]
+    [TestCase("0x5468", (ushort)0x5468)]
+    public void UnknownInstruction_IsCorrectlyEncoded(string mnemonic, ushort expectedInstructionCode)
+    {
+      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
+
+      VerifyInstruction<UndefinedInstruction>(cpuInstruction, mnemonic);
+
+      Assert.That(cpuInstruction.Decoded.InstructionCode, Is.EqualTo(expectedInstructionCode));
+    }
+
+    [Test]
+    public void EmptyInstruction_IsCorrectlyEncoded()
+    {
+      var cpuInstruction = _instructionEncoder.GetCpuInstruction(string.Empty);
+
+      VerifyInstruction<UndefinedInstruction>(cpuInstruction, "0x0000");
+
+      Assert.That(cpuInstruction.Decoded.InstructionCode, Is.EqualTo(0x0000));
+    }
+
+    #region Helper methods
 
     private void VerifyNnnInstruction(string mnemonic, ushort expectedNnn, Type expectedInstructionType)
     {
@@ -266,5 +329,7 @@ namespace Chip8.Tests
       Assert.That(cpuInstruction, Is.InstanceOf(instructionType));
       Assert.That(cpuInstruction.Mnemonic, Is.EqualTo(mnemonic));
     }
+
+    #endregion
   }
 }
