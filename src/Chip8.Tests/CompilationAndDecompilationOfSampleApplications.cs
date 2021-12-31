@@ -40,7 +40,15 @@ namespace Chip8.Tests
         var instructions = new List<string>();
         for (int i = 0; i < application.Length - 1; i += 2)
         {
-          var instruction = GetInstruction(application, i, instructionDecoder);
+          var instruction = GetInstruction(application[i], application[i+1], instructionDecoder);
+          instructions.Add(instruction);
+        }
+
+        // if length of the application is not an even number, that means that the last instruction
+        // was skipped (in the preceding for loop) because it did not start on an even address
+        if(application.Length % 2 != 0)
+        {
+          var instruction = GetInstruction(application[application.Length - 1], 0x0, instructionDecoder);
           instructions.Add(instruction);
         }
 
@@ -51,9 +59,9 @@ namespace Chip8.Tests
       }
     }
 
-    private string GetInstruction(byte[] application, int i, InstructionDecoder instructionDecoder)
+    private string GetInstruction(byte msb, byte lsb, InstructionDecoder instructionDecoder)
     {
-      var decodedInstruction = instructionDecoder.Decode(application[i], application[i + 1]);
+      var decodedInstruction = instructionDecoder.Decode(msb, lsb);
       var cpuInstruction = instructionDecoder.GetCpuInstruction(decodedInstruction);
       return cpuInstruction.Mnemonic;
     }
