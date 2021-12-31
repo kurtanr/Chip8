@@ -32,11 +32,11 @@ namespace Chip8
       switch (decodedInstruction.OpCode)
       {
         case 0x0:
-          if (decodedInstruction.kk == 0xE0)
+          if (decodedInstruction.kk == 0xE0 && decodedInstruction.x == 0)
           {
             cpuInstruction = new Instruction_00E0(decodedInstruction);
           }
-          else if (decodedInstruction.kk == 0xEE)
+          else if (decodedInstruction.kk == 0xEE && decodedInstruction.x == 0)
           {
             cpuInstruction = new Instruction_00EE(decodedInstruction);
           }

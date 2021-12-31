@@ -83,6 +83,8 @@ namespace Chip8.Tests
       var instructionDecoder = new InstructionDecoder();
 
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x0000)), Is.InstanceOf<UndefinedInstruction>());
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x01E0)), Is.InstanceOf<UndefinedInstruction>());
+      Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x01EE)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x5468)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x8468)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0x9468)), Is.InstanceOf<UndefinedInstruction>());
