@@ -1,4 +1,5 @@
 ﻿using Chip8.Instructions;
+using System.Globalization;
 using System.Linq;
 
 namespace Chip8
@@ -119,6 +120,42 @@ namespace Chip8
         _ when instruction.StartsWith("sknp") =>
           new DecodedInstruction((ushort)(0xE0A1 | GetX(instruction))),
 
+        // Instruction_Fx07
+        _ when instruction.StartsWith("ld v") && instruction.Contains("dt") =>
+          new DecodedInstruction((ushort)(0xF007 | GetX(instruction))),
+
+        // Instruction_Fx0A
+        _ when instruction.StartsWith("ld v") && instruction.Contains("k") =>
+          new DecodedInstruction((ushort)(0xF00A | GetX(instruction))),
+
+        // Instruction_Fx15
+        _ when instruction.StartsWith("ld dt") =>
+          new DecodedInstruction((ushort)(0xF015 | GetX(instruction))),
+
+        // Instruction_Fx18
+        _ when instruction.StartsWith("ld st") =>
+          new DecodedInstruction((ushort)(0xF018 | GetX(instruction))),
+
+        // Instruction_Fx1E
+        _ when instruction.StartsWith("add i") =>
+          new DecodedInstruction((ushort)(0xF01E | GetX(instruction))),
+
+        // Instruction_Fx29
+        _ when instruction.StartsWith("ld f") =>
+          new DecodedInstruction((ushort)(0xF029 | GetX(instruction))),
+
+        // Instruction_Fx33
+        _ when instruction.StartsWith("ld b") =>
+          new DecodedInstruction((ushort)(0xF033 | GetX(instruction))),
+
+        // Instruction_Fx55
+        _ when instruction.StartsWith("ld [i]") =>
+          new DecodedInstruction((ushort)(0xF055 | GetX(instruction))),
+
+        // Instruction_Fx65
+        _ when instruction.StartsWith("ld v") && instruction.Contains("[i]") =>
+          new DecodedInstruction((ushort)(0xF065 | GetX(instruction))),
+
         // UndefinedInstruction
         _ when instruction.StartsWith("0x") =>
           new DecodedInstruction(GetNnn(instruction)),
@@ -137,7 +174,7 @@ namespace Chip8
     /// </summary>
     private ushort GetNnn(string instruction)
     {
-      return ushort.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
+      return ParseAddressUShort(instruction);
     }
 
     /// <summary>
@@ -146,8 +183,8 @@ namespace Chip8
     /// </summary>
     private ushort GetXkk(string instruction)
     {
-      byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
-      byte kk = byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
+      byte x = ParseRegister(instruction);
+      byte kk = ParseAddress(instruction);
 
       return (ushort)(x << 8 | kk);
     }
@@ -158,8 +195,8 @@ namespace Chip8
     /// </summary>
     private ushort GetXy(string instruction)
     {
-      byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
-      byte y = byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
+      byte x = ParseRegister(instruction);
+      byte y = ParseLastRegister(instruction);
 
       return (ushort)(x << 8 | y << 4);
     }
@@ -169,9 +206,9 @@ namespace Chip8
     /// </summary>
     private ushort GetXyn(string instruction)
     {
-      byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
-      byte y = byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
-      byte n = byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
+      byte x = ParseRegister(instruction);
+      byte y = ParseLastRegister(instruction);
+      byte n = ParseAddress(instruction);
 
       return (ushort)(x << 8 | y << 4 | n);
     }
@@ -181,8 +218,32 @@ namespace Chip8
     /// </summary>
     private ushort GetX(string instruction)
     {
-      var x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
+      var x = ParseRegister(instruction);
       return (ushort)(x << 8);
+    }
+
+    private byte ParseRegister(string instruction)
+    {
+      return byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1),
+        NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+    }
+
+    private byte ParseLastRegister(string instruction)
+    {
+      return byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1),
+        NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+    }
+
+    private byte ParseAddress(string instruction)
+    {
+      return byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2),
+        NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+    }
+
+    private ushort ParseAddressUShort(string instruction)
+    {
+      return ushort.Parse(instruction.Substring(instruction.IndexOf("0x") + 2),
+        NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
   }
 }

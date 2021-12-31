@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Chip8.Instructions;
+using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
@@ -56,6 +57,46 @@ namespace Chip8.Tests
         var alreadyDecompiledApplication = File.ReadAllLines(codeFilePath);
         CollectionAssert.AreEqual(alreadyDecompiledApplication, instructions, $"File: {codeFilePath}");
         //File.WriteAllLines(codeFilePath, instructions);
+      }
+    }
+
+    [Test]
+    [Ignore("Executed manually")]
+    public void CompiledApplication_IsSameAs_AlreadyCompiledApplication()
+    {
+      var directory = new DirectoryInfo(@"..\..\..\..\..\games");
+      foreach (var file in Directory.EnumerateFiles(directory.FullName).Where(x => x.EndsWith(".c8")))
+      {
+        var decompiledApplication = File.ReadAllLines(file);
+        var instructionEncoder = new InstructionEncoder();
+
+        // Convert all lines of code into CPU instructions
+        var cpuInstructions = new List<CpuInstruction>();
+        for (int i = 0; i < decompiledApplication.Length; i++)
+        {
+          var cpuInstruction = instructionEncoder.GetCpuInstruction(decompiledApplication[i]);
+          cpuInstructions.Add(cpuInstruction);
+        }
+
+        var application = new List<byte>();
+        foreach (var cpuInstruction in cpuInstructions)
+        {
+          // First add most significant byte
+          application.Add((byte)((cpuInstruction.Decoded.InstructionCode & 0xFF00) >> 8));
+
+          // Then least significant byte
+          application.Add(cpuInstruction.Decoded.kk);
+        }
+
+        if(application[application.Count - 1] == 0x0)
+        {
+          application.RemoveAt(application.Count - 1);
+        }
+
+        var binaryFilePath = file.Substring(0, file.Length - 3);
+        var alreadyCompiledApplication = File.ReadAllBytes(binaryFilePath);
+        CollectionAssert.AreEqual(alreadyCompiledApplication, application, $"File: {binaryFilePath}");
+        //File.WriteAllBytes(binaryFilePath, application.ToArray());
       }
     }
 
