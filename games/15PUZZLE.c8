@@ -23,7 +23,7 @@ LD V0, [I]
 SNE V0, 0x0
 JP 0x234
 LD F, V0
-DRW V2, V3, 5
+DRW V2, V3, 0x5
 ADD V1, 0x1
 ADD V2, 0x5
 LD V4, 0x3

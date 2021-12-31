@@ -54,7 +54,7 @@ namespace Chip8.Tests.Instructions
       Assert.That(cpu.V[0xF], Is.EqualTo(1));
 
       displayMock.VerifyAll();
-      Assert.That(instruction.Mnemonic, Is.EqualTo($"DRW V{decodedInstruction.x:X}, V{decodedInstruction.y:X}, {decodedInstruction.n:X}"));
+      Assert.That(instruction.Mnemonic, Is.EqualTo($"DRW V{decodedInstruction.x:X}, V{decodedInstruction.y:X}, 0x{decodedInstruction.n:X}"));
     }
 
     [Test]
@@ -65,6 +65,18 @@ namespace Chip8.Tests.Instructions
 
       var instruction = new Instruction_Dxyn(decodedInstruction);
       instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
+    }
+
+    [Test]
+    public void Instruction_Dxy0_CorrectlySets_NibbleAsHex_InMnemonic()
+    {
+      var decodedInstruction = new DecodedInstruction(0xDABC);
+      var instruction = new Instruction_Dxyn(decodedInstruction);
+
+      Assert.That(instruction.Decoded.x, Is.EqualTo(0xA));
+      Assert.That(instruction.Decoded.y, Is.EqualTo(0xB));
+      Assert.That(instruction.Decoded.n, Is.EqualTo(0xC));
+      Assert.That(instruction.Mnemonic, Is.EqualTo("DRW VA, VB, 0xC"));
     }
   }
 }

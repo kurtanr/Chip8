@@ -19,7 +19,7 @@ namespace Chip8.Instructions
     public Instruction_Dxyn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
     {
       Description = $"Draw at (V{Decoded.x:X}, V{Decoded.y:X}) {Decoded.n}-byte sprite from I. VF = collision.";
-      Mnemonic = $"DRW V{Decoded.x:X}, V{Decoded.y:X}, {Decoded.n}";
+      Mnemonic = $"DRW V{Decoded.x:X}, V{Decoded.y:X}, 0x{Decoded.n:X}";
     }
 
     /// <inheritdoc/>
