@@ -34,8 +34,7 @@ namespace Chip8
 
       cpuInstruction.Execute(_cpu, _display, _keyboard);
 
-      if (!(cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn || 
-            cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn))
+      if (!IsInstructionWhichModifiesProgramCounter(cpuInstruction))
       {
         _cpu.PC += 2;
       }
@@ -53,6 +52,12 @@ namespace Chip8
       }
 
       return cpuInstruction;
+    }
+
+    private bool IsInstructionWhichModifiesProgramCounter(CpuInstruction cpuInstruction)
+    {
+      return cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn ||
+        cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn;
     }
   }
 }
