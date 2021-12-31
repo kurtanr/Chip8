@@ -167,12 +167,32 @@ namespace Chip8.Tests
       VerifyXkkInstruction(mnemonic, expectedX, expectedKK, typeof(Instruction_Cxkk));
     }
 
+    [TestCase("DRW V1, V2, 0x3", 0x1, 0x2, 0x3)]
+    [TestCase("DRW VA, VB, 0xC", 0xA, 0xB, 0xC)]
+    public void Instruction_Dxyn_IsCorrectlyEncoded(string mnemonic, byte expectedX, byte expectedY, byte expectedN)
+    {
+      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
 
+      VerifyInstruction<Instruction_Dxyn>(cpuInstruction, mnemonic);
 
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xD123)), Is.InstanceOf<Instruction_Dxyn>());
+      Assert.That(cpuInstruction.Decoded.x, Is.EqualTo(expectedX));
+      Assert.That(cpuInstruction.Decoded.y, Is.EqualTo(expectedY));
+      Assert.That(cpuInstruction.Decoded.n, Is.EqualTo(expectedN));
+    }
 
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xE19E)), Is.InstanceOf<Instruction_Ex9E>());
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xE1A1)), Is.InstanceOf<Instruction_ExA1>());
+    [TestCase("SKP V0", 0x0)]
+    [TestCase("SKP VA", 0xA)]
+    public void Instruction_Ex9E_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_Ex9E));
+    }
+
+    [TestCase("SKNP V0", 0x0)]
+    [TestCase("SKNP VA", 0xA)]
+    public void Instruction_ExA1_IsCorrectlyEncoded(string mnemonic, byte expectedX)
+    {
+      VerifyXInstruction(mnemonic, expectedX, typeof(Instruction_ExA1));
+    }
 
     //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xFA07)), Is.InstanceOf<Instruction_Fx07>());
     //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xF10A)), Is.InstanceOf<Instruction_Fx0A>());
@@ -224,6 +244,15 @@ namespace Chip8.Tests
 
       Assert.That(cpuInstruction.Decoded.x, Is.EqualTo(expectedX));
       Assert.That(cpuInstruction.Decoded.y, Is.EqualTo(expectedY));
+    }
+
+    private void VerifyXInstruction(string mnemonic, byte expectedX, Type expectedInstructionType)
+    {
+      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
+
+      VerifyInstruction(cpuInstruction, mnemonic, expectedInstructionType);
+
+      Assert.That(cpuInstruction.Decoded.x, Is.EqualTo(expectedX));
     }
 
     private void VerifyInstruction<T>(CpuInstruction cpuInstruction, string mnemonic) where T : CpuInstruction

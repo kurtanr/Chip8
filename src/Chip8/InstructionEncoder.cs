@@ -107,6 +107,18 @@ namespace Chip8
         _ when instruction.StartsWith("rnd v") && instruction.Contains("0x") =>
           new DecodedInstruction((ushort)(0xC000 | GetXkk(instruction))),
 
+        // Instruction_Dxyn
+        _ when instruction.StartsWith("drw") =>
+          new DecodedInstruction((ushort)(0xD000 | GetXyn(instruction))),
+
+        // Instruction_Ex9E
+        _ when instruction.StartsWith("skp") =>
+          new DecodedInstruction((ushort)(0xE09E | GetX(instruction))),
+
+        // Instruction_ExA1
+        _ when instruction.StartsWith("sknp") =>
+          new DecodedInstruction((ushort)(0xE0A1 | GetX(instruction))),
+
         // UndefinedInstruction
         _ when instruction.StartsWith("0x") =>
           new DecodedInstruction(GetNnn(instruction)),
@@ -150,6 +162,27 @@ namespace Chip8
       byte y = byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
 
       return (ushort)(x << 8 | y << 4);
+    }
+
+    /// <summary>
+    /// Applies to Instruction_Dxyn: "DRW vx[0-f], vy[0-f], 0xn"
+    /// </summary>
+    private ushort GetXyn(string instruction)
+    {
+      byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
+      byte y = byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
+      byte n = byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
+
+      return (ushort)(x << 8 | y << 4 | n);
+    }
+
+    /// <summary>
+    /// Applies to instructions in the form of: "OPERATION ... vx[0-f]"
+    /// </summary>
+    private ushort GetX(string instruction)
+    {
+      var x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
+      return (ushort)(x << 8);
     }
   }
 }
