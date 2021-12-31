@@ -29,11 +29,11 @@ namespace Chip8
 
         // Instruction_1nnn
         _ when instruction.StartsWith("jp 0x") => 
-          new DecodedInstruction((ushort)(0x1000 | GetHexValue(instruction.Substring(5)))),
+          new DecodedInstruction((ushort)(0x1000 | GetNnn(instruction))),
 
         // Instruction_2nnn
         _ when instruction.StartsWith("call 0x") => 
-          new DecodedInstruction((ushort)(0x2000 | GetHexValue(instruction.Substring(7)))),
+          new DecodedInstruction((ushort)(0x2000 | GetNnn(instruction))),
 
         // Instruction_3xkk
         _ when instruction.StartsWith("se v") && instruction.Contains("0x") => 
@@ -95,13 +95,21 @@ namespace Chip8
         _ when instruction.StartsWith("sne v") && !instruction.Contains("0x") =>
           new DecodedInstruction((ushort)(0x9000 | GetXy(instruction))),
 
+        // Instruction_Annn
+        _ when instruction.StartsWith("ld i") =>
+          new DecodedInstruction((ushort)(0xA000 | GetNnn(instruction))),
+
+        // Instruction_Bnnn
+        _ when instruction.StartsWith("jp v0") =>
+          new DecodedInstruction((ushort)(0xB000 | GetNnn(instruction))),
+
         // Instruction_Cxkk
         _ when instruction.StartsWith("rnd v") && instruction.Contains("0x") =>
           new DecodedInstruction((ushort)(0xC000 | GetXkk(instruction))),
 
         // UndefinedInstruction
         _ when instruction.StartsWith("0x") =>
-          new DecodedInstruction(GetHexValue(instruction.Substring(2))),
+          new DecodedInstruction(GetNnn(instruction)),
 
         // TODO: throw exception?
         _ => new DecodedInstruction(0x0000)
@@ -111,27 +119,33 @@ namespace Chip8
       return instructionDecoder.GetCpuInstruction(decodedInstruction);
     }
 
-    private ushort GetHexValue(string instruction)
+    /// <summary>
+    /// Applies to instruction in the form of: "OPERATION 0xnnn"<br></br>
+    /// Where OPERATION can be one of: jp, call, ld i, jp v0
+    /// </summary>
+    private ushort GetNnn(string instruction)
     {
-      return ushort.Parse(instruction, System.Globalization.NumberStyles.HexNumber);
+      return ushort.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
     }
 
+    /// <summary>
+    /// Applies to instruction in the form of: "OPERATION vx[0-f], 0xkk"<br></br>
+    /// Where OPERATION can be one of: se, sne, ld, add, rnd
+    /// </summary>
     private ushort GetXkk(string instruction)
     {
-      // Applies to instruction in the form of: "<OP> v[0-f], 0x.."
-      // Where <OP> can be one of: se, sne, ld, add, rnd
-
       byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
       byte kk = byte.Parse(instruction.Substring(instruction.IndexOf("0x") + 2), System.Globalization.NumberStyles.HexNumber);
 
       return (ushort)(x << 8 | kk);
     }
 
+    /// <summary>
+    /// Applies to instruction in the form of: "OPERATION vx[0-f], vy[0-f]"<br></br>
+    /// Where OPERATION can be one of: se, ld, or, and, xor, add, sub, shr, subn, shl, sne
+    /// </summary>
     private ushort GetXy(string instruction)
     {
-      // Applies to instruction in the form of: "<OP> v[0-f], v[0-f]"
-      // Where <OP> can be one of: se, sne, ld, or, and, xor, ...
-
       byte x = byte.Parse(instruction.Substring(instruction.IndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
       byte y = byte.Parse(instruction.Substring(instruction.LastIndexOf("v") + 1, 1), System.Globalization.NumberStyles.HexNumber);
 

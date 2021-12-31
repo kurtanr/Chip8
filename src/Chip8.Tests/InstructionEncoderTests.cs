@@ -31,22 +31,14 @@ namespace Chip8.Tests
     [TestCase("JP 0xABB", (ushort)0xABB)]
     public void Instruction_1nnn_IsCorrectlyEncoded(string mnemonic, ushort expectedNNN)
     {
-      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
-
-      VerifyInstruction<Instruction_1nnn>(cpuInstruction, mnemonic);
-
-      Assert.That(cpuInstruction.Decoded.nnn, Is.EqualTo(expectedNNN));
+      VerifyNnnInstruction(mnemonic, expectedNNN, typeof(Instruction_1nnn));
     }
 
     [TestCase("CALL 0x468", (ushort)0x468)]
     [TestCase("CALL 0x4FB", (ushort)0x4FB)]
     public void Instruction_2nnn_IsCorrectlyEncoded(string mnemonic, ushort expectedNNN)
     {
-      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
-
-      VerifyInstruction<Instruction_2nnn>(cpuInstruction, mnemonic);
-
-      Assert.That(cpuInstruction.Decoded.nnn, Is.EqualTo(expectedNNN));
+      VerifyNnnInstruction(mnemonic, expectedNNN, typeof(Instruction_2nnn));
     }
 
     [TestCase("SE V4, 0x68", 0x4, 0x68)]
@@ -154,6 +146,20 @@ namespace Chip8.Tests
       VerifyXyInstruction(mnemonic, expectedX, expectedY, typeof(Instruction_9xy0));
     }
 
+    [TestCase("LD I, 0x468", (ushort)0x468)]
+    [TestCase("LD I, 0x4FB", (ushort)0x4FB)]
+    public void Instruction_Annn_IsCorrectlyEncoded(string mnemonic, ushort expectedNNN)
+    {
+      VerifyNnnInstruction(mnemonic, expectedNNN, typeof(Instruction_Annn));
+    }
+
+    [TestCase("JP V0, 0x468", (ushort)0x468)]
+    [TestCase("JP V0, 0x4FB", (ushort)0x4FB)]
+    public void Instruction_Bnnn_IsCorrectlyEncoded(string mnemonic, ushort expectedNNN)
+    {
+      VerifyNnnInstruction(mnemonic, expectedNNN, typeof(Instruction_Bnnn));
+    }
+
     [TestCase("RND V4, 0x68", 0x4, 0x68)]
     [TestCase("RND VF, 0xA", 0xF, 0xA)]
     public void Instruction_Cxkk_IsCorrectlyEncoded(string mnemonic, byte expectedX, byte expectedKK)
@@ -162,12 +168,6 @@ namespace Chip8.Tests
     }
 
 
-
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xA123)), Is.InstanceOf<Instruction_Annn>());
-
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xB123)), Is.InstanceOf<Instruction_Bnnn>());
-
-    //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xC123)), Is.InstanceOf<Instruction_Cxkk>());
 
     //Assert.That(instructionEncoder.GetCpuInstruction(new DecodedInstruction(0xD123)), Is.InstanceOf<Instruction_Dxyn>());
 
@@ -196,6 +196,15 @@ namespace Chip8.Tests
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xE101)), Is.InstanceOf<UndefinedInstruction>());
       Assert.That(instructionDecoder.GetCpuInstruction(new DecodedInstruction(0xF1FF)), Is.InstanceOf<UndefinedInstruction>());
     }*/
+
+    private void VerifyNnnInstruction(string mnemonic, ushort expectedNnn, Type expectedInstructionType)
+    {
+      var cpuInstruction = _instructionEncoder.GetCpuInstruction(mnemonic);
+
+      VerifyInstruction(cpuInstruction, mnemonic, expectedInstructionType);
+
+      Assert.That(cpuInstruction.Decoded.nnn, Is.EqualTo(expectedNnn));
+    }
 
     private void VerifyXkkInstruction(string mnemonic, byte expectedX, byte expectedKK, Type expectedInstructionType)
     {
