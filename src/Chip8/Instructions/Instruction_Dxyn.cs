@@ -1,75 +1,74 @@
 ﻿using System;
 using System.Threading;
 
-namespace Chip8.Instructions
+namespace Chip8.Instructions;
+
+/// <summary>
+/// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+/// </summary>
+/// <remarks>
+/// The interpreter reads n bytes from memory, starting at the address stored in I.
+/// These bytes are then displayed as sprites on screen at coordinates (Vx, Vy).
+/// Sprites are XORed onto the existing screen. If this causes any pixels to be erased,
+/// VF is set to 1, otherwise it is set to 0.
+/// If the sprite is positioned so part of it is outside the coordinates of the display,
+/// it wraps around to the opposite side of the screen.
+/// </remarks>
+public class Instruction_Dxyn : CpuInstruction
 {
-  /// <summary>
-  /// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-  /// </summary>
-  /// <remarks>
-  /// The interpreter reads n bytes from memory, starting at the address stored in I.
-  /// These bytes are then displayed as sprites on screen at coordinates (Vx, Vy).
-  /// Sprites are XORed onto the existing screen. If this causes any pixels to be erased,
-  /// VF is set to 1, otherwise it is set to 0.
-  /// If the sprite is positioned so part of it is outside the coordinates of the display,
-  /// it wraps around to the opposite side of the screen.
-  /// </remarks>
-  public class Instruction_Dxyn : CpuInstruction
+  public Instruction_Dxyn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
   {
-    public Instruction_Dxyn(DecodedInstruction decodedInstruction) : base(decodedInstruction)
+    Description = $"Draw at (V{Decoded.x:X}, V{Decoded.y:X}) {Decoded.n}-byte sprite from I. VF = collision.";
+    Mnemonic = $"DRW V{Decoded.x:X}, V{Decoded.y:X}, 0x{Decoded.n:X}";
+  }
+
+  /// <inheritdoc/>
+  public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
+  {
+    if (Decoded.n == 0)
     {
-      Description = $"Draw at (V{Decoded.x:X}, V{Decoded.y:X}) {Decoded.n}-byte sprite from I. VF = collision.";
-      Mnemonic = $"DRW V{Decoded.x:X}, V{Decoded.y:X}, 0x{Decoded.n:X}";
+      return;
     }
 
-    /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
+    var spriteData = new byte[Decoded.n];
+    Array.Copy(cpu.Memory, cpu.I, spriteData, 0, Decoded.n);
+
+    var xStart = (byte)(cpu.V[Decoded.x] % 64);
+    var yStart = (byte)(cpu.V[Decoded.y] % 32);
+
+    for (byte i = 0; i < spriteData.Length; i++)
     {
-      if (Decoded.n == 0)
-      {
-        return;
-      }
+      var y = (byte)((yStart + i) % 32);
 
-      var spriteData = new byte[Decoded.n];
-      Array.Copy(cpu.Memory, cpu.I, spriteData, 0, Decoded.n);
+      var sprite = spriteData[i];
 
-      var xStart = (byte)(cpu.V[Decoded.x] % 64);
-      var yStart = (byte)(cpu.V[Decoded.y] % 32);
+      SetPixel(display, cpu, xStart, 0, y, sprite, 0x80);
+      SetPixel(display, cpu, xStart, 1, y, sprite, 0x40);
+      SetPixel(display, cpu, xStart, 2, y, sprite, 0x20);
+      SetPixel(display, cpu, xStart, 3, y, sprite, 0x10);
 
-      for (byte i = 0; i < spriteData.Length; i++)
-      {
-        var y = (byte)((yStart + i) % 32);
-
-        var sprite = spriteData[i];
-
-        SetPixel(display, cpu, xStart, 0, y, sprite, 0x80);
-        SetPixel(display, cpu, xStart, 1, y, sprite, 0x40);
-        SetPixel(display, cpu, xStart, 2, y, sprite, 0x20);
-        SetPixel(display, cpu, xStart, 3, y, sprite, 0x10);
-
-        SetPixel(display, cpu, xStart, 4, y, sprite, 0x08);
-        SetPixel(display, cpu, xStart, 5, y, sprite, 0x04);
-        SetPixel(display, cpu, xStart, 6, y, sprite, 0x02);
-        SetPixel(display, cpu, xStart, 7, y, sprite, 0x01);
-      }
+      SetPixel(display, cpu, xStart, 4, y, sprite, 0x08);
+      SetPixel(display, cpu, xStart, 5, y, sprite, 0x04);
+      SetPixel(display, cpu, xStart, 6, y, sprite, 0x02);
+      SetPixel(display, cpu, xStart, 7, y, sprite, 0x01);
     }
+  }
 
-    private void SetPixel(IDisplay display, Cpu cpu, byte xStart, byte xOffset, byte y, byte sprite, byte mask)
+  private void SetPixel(IDisplay display, Cpu cpu, byte xStart, byte xOffset, byte y, byte sprite, byte mask)
+  {
+    var x = (byte)((xStart + xOffset) % 64);
+    var isPixelSetOnScreen = display.GetPixel(x, y);
+    var isSettingOfPixelRequested = ((sprite & mask) > 0);
+
+    // XOR operation
+    if (isPixelSetOnScreen && isSettingOfPixelRequested)
     {
-      var x = (byte)((xStart + xOffset) % 64);
-      var isPixelSetOnScreen = display.GetPixel(x, y);
-      var isSettingOfPixelRequested = ((sprite & mask) > 0);
-
-      // XOR operation
-      if (isPixelSetOnScreen && isSettingOfPixelRequested)
-      {
-        display.ClearPixel(x, y);
-        cpu.V[0xF] = 1;
-      }
-      else if (!isPixelSetOnScreen && isSettingOfPixelRequested)
-      {
-        display.SetPixel(x, y);
-      }
+      display.ClearPixel(x, y);
+      cpu.V[0xF] = 1;
+    }
+    else if (!isPixelSetOnScreen && isSettingOfPixelRequested)
+    {
+      display.SetPixel(x, y);
     }
   }
 }

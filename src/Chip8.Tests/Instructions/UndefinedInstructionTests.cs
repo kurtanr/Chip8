@@ -2,31 +2,30 @@
 using NUnit.Framework;
 using System;
 
-namespace Chip8.Tests.Instructions
+namespace Chip8.Tests.Instructions;
+
+[TestFixture]
+public class UndefinedInstructionTests : BaseInstructionTests
 {
-  [TestFixture]
-  public class UndefinedInstructionTests : BaseInstructionTests
+  [Test]
+  public void UndefinedInstruction_IsCorrectlyInitialized()
   {
-    [Test]
-    public void UndefinedInstruction_IsCorrectlyInitialized()
-    {
-      const ushort instructionCode = 0xE012;
-      var undefinedInstruction = new UndefinedInstruction(new DecodedInstruction(instructionCode));
+    const ushort instructionCode = 0xE012;
+    var undefinedInstruction = new UndefinedInstruction(new DecodedInstruction(instructionCode));
 
-      Assert.That(undefinedInstruction.Description, Is.EqualTo(string.Empty));
-      Assert.That(undefinedInstruction.Decoded.InstructionCode, Is.EqualTo(instructionCode));
-      Assert.That(undefinedInstruction.Mnemonic, Is.EqualTo($"0x{instructionCode:X4}"));
-      Assert.That(undefinedInstruction.ToString(), Is.EqualTo(undefinedInstruction.Mnemonic));
-      Assert.That(undefinedInstruction.ToStringWithDescription(), Is.EqualTo(undefinedInstruction.Mnemonic));
-    }
+    Assert.That(undefinedInstruction.Description, Is.EqualTo(string.Empty));
+    Assert.That(undefinedInstruction.Decoded.InstructionCode, Is.EqualTo(instructionCode));
+    Assert.That(undefinedInstruction.Mnemonic, Is.EqualTo($"0x{instructionCode:X4}"));
+    Assert.That(undefinedInstruction.ToString(), Is.EqualTo(undefinedInstruction.Mnemonic));
+    Assert.That(undefinedInstruction.ToStringWithDescription(), Is.EqualTo(undefinedInstruction.Mnemonic));
+  }
 
-    [Test]
-    public void ExecutingUndefinedInstruction_ThrowsException()
-    {
-      var cpu = new Cpu();
+  [Test]
+  public void ExecutingUndefinedInstruction_ThrowsException()
+  {
+    var cpu = new Cpu();
 
-      Assert.Throws<InvalidOperationException>(() => new UndefinedInstruction(
-        new DecodedInstruction(0x0)).Execute(cpu, MockedDisplay, MockedKeyboard));
-    }
+    Assert.Throws<InvalidOperationException>(() => new UndefinedInstruction(
+      new DecodedInstruction(0x0)).Execute(cpu, MockedDisplay, MockedKeyboard));
   }
 }

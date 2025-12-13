@@ -1,27 +1,26 @@
 ﻿using Chip8.Instructions;
 using NUnit.Framework;
 
-namespace Chip8.Tests.Instructions
+namespace Chip8.Tests.Instructions;
+
+[TestFixture]
+public class Instruction_5xy0Tests : BaseInstructionTests
 {
-  [TestFixture]
-  public class Instruction_5xy0Tests : BaseInstructionTests
+  [TestCase(true)]
+  [TestCase(false)]
+  public void Executing_Instruction_5xy0_WorksAsExpected(bool vxEqualToVy)
   {
-    [TestCase(true)]
-    [TestCase(false)]
-    public void Executing_Instruction_5xy0_WorksAsExpected(bool vxEqualToVy)
-    {
-      var cpu = new Cpu();
-      var decodedInstruction = new DecodedInstruction(0x5460);
+    var cpu = new Cpu();
+    var decodedInstruction = new DecodedInstruction(0x5460);
 
-      cpu.V[decodedInstruction.x] = 0x1;
-      cpu.V[decodedInstruction.y] = vxEqualToVy ? (byte)0x1 : (byte)0x2;
+    cpu.V[decodedInstruction.x] = 0x1;
+    cpu.V[decodedInstruction.y] = vxEqualToVy ? (byte)0x1 : (byte)0x2;
 
-      var instruction = new Instruction_5xy0(decodedInstruction);
-      instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
+    var instruction = new Instruction_5xy0(decodedInstruction);
+    instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
-      var pcOffset = vxEqualToVy ? 2 : 0;
-      Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + pcOffset));
-      Assert.That(instruction.Mnemonic, Is.EqualTo($"SE V{decodedInstruction.x:X}, V{decodedInstruction.y:X}"));
-    }
+    var pcOffset = vxEqualToVy ? 2 : 0;
+    Assert.That(cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction + pcOffset));
+    Assert.That(instruction.Mnemonic, Is.EqualTo($"SE V{decodedInstruction.x:X}, V{decodedInstruction.y:X}"));
   }
 }

@@ -1,44 +1,43 @@
 ﻿using System;
 
-namespace Chip8.Instructions
+namespace Chip8.Instructions;
+
+/// <summary>
+/// Store registers V0 through Vx in memory starting at location I.
+/// </summary>
+/// <remarks>
+/// The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
+/// I is set to I + X + 1 after operation.
+/// </remarks>
+public class Instruction_Fx55 : CpuInstruction
 {
-  /// <summary>
-  /// Store registers V0 through Vx in memory starting at location I.
-  /// </summary>
-  /// <remarks>
-  /// The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
-  /// I is set to I + X + 1 after operation.
-  /// </remarks>
-  public class Instruction_Fx55 : CpuInstruction
+  public Instruction_Fx55(DecodedInstruction decodedInstruction) : base(decodedInstruction)
   {
-    public Instruction_Fx55(DecodedInstruction decodedInstruction) : base(decodedInstruction)
+    if (Decoded.x == 0)
     {
-      if(Decoded.x == 0)
-      {
-        Description = $"Store V0 at address I, I+=1.";
-      }
-      else
-      {
-        Description = $"Store V0..V{Decoded.x:X} starting at address I, I+={Decoded.x + 1}.";
-      }
-      Mnemonic = $"LD [I], V{Decoded.x:X}";
+      Description = $"Store V0 at address I, I+=1.";
     }
-
-    /// <inheritdoc/>
-    public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
+    else
     {
-      var maxAddress = Cpu.MemorySizeInBytes - 1;
+      Description = $"Store V0..V{Decoded.x:X} starting at address I, I+={Decoded.x + 1}.";
+    }
+    Mnemonic = $"LD [I], V{Decoded.x:X}";
+  }
 
-      for (byte i = 0; i<= Decoded.x; i++)
+  /// <inheritdoc/>
+  public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
+  {
+    var maxAddress = Cpu.MemorySizeInBytes - 1;
+
+    for (byte i = 0; i <= Decoded.x; i++)
+    {
+      if (cpu.I > maxAddress)
       {
-        if(cpu.I > maxAddress)
-        {
-          throw new InvalidOperationException($"Attempting to write to memory address I (0x{cpu.I:X})." +
-            $"Highest accessible memory address is 0x{maxAddress:X}.");
-        }
-
-        cpu.Memory[cpu.I++] = cpu.V[i];
+        throw new InvalidOperationException($"Attempting to write to memory address I (0x{cpu.I:X})." +
+          $"Highest accessible memory address is 0x{maxAddress:X}.");
       }
+
+      cpu.Memory[cpu.I++] = cpu.V[i];
     }
   }
 }
