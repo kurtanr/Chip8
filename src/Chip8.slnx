@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Chip8.Tests/Chip8.Tests.csproj" />
+  <Project Path="Chip8/Chip8.csproj" />
+</Solution>
