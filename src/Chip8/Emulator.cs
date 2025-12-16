@@ -157,6 +157,13 @@ public class Emulator : IDisposable
       IsApplicationRunning = false;
       IsApplicationPaused = false;
 
+      // Wait for the execution thread to stop before modifying CPU state
+      if (_executeCycleTask != null)
+      {
+        _executeCycleTask.Wait();
+        _executeCycleTask = null;
+      }
+
       Array temp = Array.CreateInstance(typeof(byte), Cpu.MemorySizeInBytes);
       Array.Copy(_cpu.Memory, temp, Cpu.MemorySizeInBytes);
 
