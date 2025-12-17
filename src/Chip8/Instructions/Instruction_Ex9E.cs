@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chip8.Instructions;
+﻿namespace Chip8.Instructions;
 
 /// <summary>
 /// Skip next instruction if key with the value of Vx is pressed.
