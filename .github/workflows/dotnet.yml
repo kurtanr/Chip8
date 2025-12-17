@@ -25,4 +25,14 @@ jobs:
     - name: Build
       run: dotnet build src/Chip8.slnx -c Release --no-restore
     - name: Test
-      run: dotnet test src/Chip8.slnx -c Release --no-build --verbosity normal
+      run: |
+        dotnet test src/Chip8.slnx -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: src/**/TestResults/**/coverage.cobertura.xml
+        flags: unittests
+        fail_ci_if_error: true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
