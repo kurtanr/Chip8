@@ -22,13 +22,16 @@ public class Instruction_Fx29Tests : BaseInstructionTests
   }
 
   [Test]
-  public void Executing_Instruction_Fx29_WithVxValue_GreatherThan0xF_ThrowsException()
+  public void Executing_Instruction_Fx29_WithVxValue_GreatherThan0xF_UsesLower4Bits()
   {
     var cpu = new Cpu();
-    cpu.V[0xA] = 0x10;
     var decodedInstruction = new DecodedInstruction(0xFA29);
+    cpu.V[decodedInstruction.x] = 0x13;
 
     var instruction = new Instruction_Fx29(decodedInstruction);
-    Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
+    instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
+
+    Assert.That(cpu.I, Is.EqualTo(15));
+    Assert.That(instruction.Mnemonic, Is.EqualTo($"LD F, V{decodedInstruction.x:X}"));
   }
 }
