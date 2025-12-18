@@ -35,6 +35,8 @@ public class Instruction_Dxyn : CpuInstruction
     var xStart = (byte)(cpu.V[Decoded.x] % 64);
     var yStart = (byte)(cpu.V[Decoded.y] % 32);
 
+    cpu.V[0xF] = 0;
+
     for (byte i = 0; i < spriteData.Length; i++)
     {
       var y = (byte)((yStart + i) % 32);
@@ -57,17 +59,23 @@ public class Instruction_Dxyn : CpuInstruction
   {
     var x = (byte)((xStart + xOffset) % 64);
     var isPixelSetOnScreen = display.GetPixel(x, y);
-    var isSettingOfPixelRequested = ((sprite & mask) > 0);
+    var isPixelSetInSprite = ((sprite & mask) > 0);
 
-    // XOR operation
-    if (isPixelSetOnScreen && isSettingOfPixelRequested)
+    // XOR operation: sprite XOR screen
+    if (isPixelSetInSprite)
     {
-      display.ClearPixel(x, y);
-      cpu.V[0xF] = 1;
+      if (isPixelSetOnScreen)
+      {
+        // 1 XOR 1 = 0: erase pixel (collision)
+        display.ClearPixel(x, y);
+        cpu.V[0xF] = 1;
+      }
+      else
+      {
+        // 1 XOR 0 = 1: set pixel
+        display.SetPixel(x, y);
+      }
     }
-    else if (!isPixelSetOnScreen && isSettingOfPixelRequested)
-    {
-      display.SetPixel(x, y);
-    }
+    // else: sprite bit is 0, so XOR doesn't change screen (0 XOR 0 = 0, 0 XOR 1 = 1)
   }
 }

@@ -25,6 +25,7 @@ public class Instruction_DxynTests : BaseInstructionTests
     // - since value at 0x300 is 0x1, and 1 is the least significant bit of that byte, then location where 
     //   pixel will be set is: xCoordinate + 7 (e.g. for value of 2, it would be xCoordinate + 6)
     // - re-executing the same command will reset the pixel and set VF register to 1
+    // - executing the same command again will set the pixel and reset VF register to 0
     var mockSequence = new MockSequence();
     var displayMock = new Mock<IDisplay>(MockBehavior.Strict);
 
@@ -44,6 +45,14 @@ public class Instruction_DxynTests : BaseInstructionTests
     }
     displayMock.InSequence(mockSequence).Setup(x => x.ClearPixel(xCoordinate + 7, yCoordinate));
 
+    // Third execution
+    for (byte i = 0; i < 8; i++)
+    {
+      displayMock.InSequence(mockSequence).Setup(x => x.GetPixel(
+        (byte)(xCoordinate + i), yCoordinate)).Returns(false);
+    }
+    displayMock.InSequence(mockSequence).Setup(x => x.SetPixel(xCoordinate + 7, yCoordinate));
+
     var display = displayMock.Object;
     var instruction = new Instruction_Dxyn(decodedInstruction);
 
@@ -52,6 +61,9 @@ public class Instruction_DxynTests : BaseInstructionTests
 
     instruction.Execute(cpu, display, MockedKeyboard);
     Assert.That(cpu.V[0xF], Is.EqualTo(1));
+
+    instruction.Execute(cpu, display, MockedKeyboard);
+    Assert.That(cpu.V[0xF], Is.EqualTo(0));
 
     displayMock.VerifyAll();
     Assert.That(instruction.Mnemonic, Is.EqualTo($"DRW V{decodedInstruction.x:X}, V{decodedInstruction.y:X}, 0x{decodedInstruction.n:X}"));
