@@ -113,14 +113,20 @@ public class Instruction_DxynTests : BaseInstructionTests
     for (byte i = 0; i < 8; i++)
     {
       displayMock.Setup(x => x.GetPixel(i, 0)).Returns(false);
-      if (i < 4) displayMock.Setup(x => x.SetPixel(i, 0));
+      if (i < 4)
+      {
+        displayMock.Setup(x => x.SetPixel(i, 0));
+      }
     }
 
     // Second byte at y=1
     for (byte i = 0; i < 8; i++)
     {
       displayMock.Setup(x => x.GetPixel(i, 1)).Returns(false);
-      if (i == 0 || i == 3) displayMock.Setup(x => x.SetPixel(i, 1));
+      if (i == 0 || i == 3)
+      {
+        displayMock.Setup(x => x.SetPixel(i, 1));
+      }
     }
 
     var instruction = new Instruction_Dxyn(decodedInstruction);
