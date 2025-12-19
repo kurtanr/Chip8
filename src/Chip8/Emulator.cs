@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,12 +9,7 @@ namespace Chip8;
 /// <summary>
 /// Emulator for the Chip8.<br></br>
 /// Uses <see cref="Cpu"/>, <see cref="IKeyboard"/> and <see cref="IDisplay"/> to emulate a Chip8 system.<br></br>
-/// Runs the emulation loop at around 60Hz. Emulation loop:<br></br>
-/// - decodes single instruction using <see cref="InstructionDecoder"/><br></br>
-/// - executes decoded instruction using <see cref="InstructionExecutor"/><br></br>
-/// - decrements <see cref="Cpu.DT"/> and <see cref="Cpu.ST"/> timers<br></br>
-/// - updates <see cref="IDisplay"/> if necessary<br></br>
-/// - reads pressed key on the <see cref="IKeyboard"/><br></br>
+/// Runs CPU at ~500 Hz. Timers (DT,ST) and refresh of the display run at 60 Hz independently of CPU.
 /// </summary>
 public class Emulator : IDisposable
 {
@@ -23,12 +19,19 @@ public class Emulator : IDisposable
   private readonly InstructionExecutor _instructionExecutor;
   private readonly StringBuilder _stringBuilder = new StringBuilder();
 
+  private int _instructionsPerSecond = 0;
+  private int _framesPerSecond = 0;
+
   private bool _isDisposed;
 
   private readonly CancellationTokenSource _executeCycleCancellationTokenSource;
   private Task _executeCycleTask;
 
-  private const int DefaultDelay = 15;
+  // Timing constants (in milliseconds)
+  private const int CpuFrequencyHz = 500;           // CPU executes at 500 Hz (standard CHIP-8)
+  private const int TimerFrequencyHz = 60;          // Timers (DT, ST) decrement at 60 Hz
+  private const double CpuCycleTimeMs = 1000.0 / CpuFrequencyHz;      // ~2ms per CPU cycle
+  private const double TimerCycleTimeMs = 1000.0 / TimerFrequencyHz;  // ~16.67ms per timer cycle
 
   /// <summary>
   /// True if application is running.
@@ -106,11 +109,15 @@ public class Emulator : IDisposable
       return;
     }
 
-    if (_executeCycleTask == null)
+    if (_executeCycleTask == null || _executeCycleTask.Status == TaskStatus.RanToCompletion)
     {
+      _executeCycleTask?.Dispose();
+
       _executeCycleTask = Task.Factory.StartNew(
-        ExecuteCycle, _executeCycleCancellationTokenSource.Token,
-        TaskCreationOptions.LongRunning, TaskScheduler.Current);
+        ExecuteCycle,
+        _executeCycleCancellationTokenSource.Token,
+        TaskCreationOptions.LongRunning,
+        TaskScheduler.Default);
     }
 
     IsApplicationRunning = true;
@@ -158,13 +165,17 @@ public class Emulator : IDisposable
       IsApplicationPaused = false;
 
       // Wait for the execution thread to stop before modifying CPU state
-      _executeCycleTask?.Wait();
+      _executeCycleTask?.Wait(1000);
 
-      Array temp = Array.CreateInstance(typeof(byte), Cpu.MemorySizeInBytes);
+      // Take a full snapshot of memory, reset CPU (which restores font data),
+      // then restore only the application region so we don't overwrite font/sprite data at 0x000.
+      var temp = new byte[Cpu.MemorySizeInBytes];
       Array.Copy(_cpu.Memory, temp, Cpu.MemorySizeInBytes);
 
       _cpu.Reset();
-      temp.CopyTo(_cpu.Memory, 0);
+
+      var appRegionLength = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction;
+      Array.Copy(temp, Cpu.MemoryAddressOfFirstInstruction, _cpu.Memory, Cpu.MemoryAddressOfFirstInstruction, appRegionLength);
 
       _display.Clear();
     }
@@ -209,7 +220,7 @@ public class Emulator : IDisposable
       throw new InvalidOperationException("Cannot execute single cycle because application is running.");
     }
     _instructionExecutor.ExecuteSingleInstruction();
-    Thread.Sleep(DefaultDelay);
+    _display.RenderIfDirty();
     IsApplicationPaused = true;
   }
 
@@ -260,24 +271,80 @@ public class Emulator : IDisposable
 
   private void ExecuteCycle()
   {
+    var stopwatch = Stopwatch.StartNew();
+    long lastTicks = stopwatch.ElapsedTicks;
+
+    double cpuAccumulator = 0;
+    double timerAccumulator = 0;
+    double measurementAccumulator = 0;
+    int instructionCount = 0;
+    int frameCount = 0;
+
     while (!_executeCycleCancellationTokenSource.IsCancellationRequested)
     {
-      while (IsApplicationRunning)
+      if (!IsApplicationRunning)
       {
-        // Execute 10 instructions per cycle
-        for (int i = 0; i < 10; i++)
-        {
-          if (IsApplicationRunning)
-          {
-            _instructionExecutor.ExecuteSingleInstruction();
-          }
-        }
-        if (IsApplicationRunning)
-        {
-          Thread.Sleep(DefaultDelay);
-        }
+        Thread.Sleep(5);
+        lastTicks = stopwatch.ElapsedTicks;
+        continue;
       }
-      return;
+
+      long currentTicks = stopwatch.ElapsedTicks;
+      double elapsedMs = (currentTicks - lastTicks) * 1000.0 / Stopwatch.Frequency;
+      lastTicks = currentTicks;
+
+      cpuAccumulator += elapsedMs;
+      timerAccumulator += elapsedMs;
+
+      // Catch up CPU
+      while (cpuAccumulator >= CpuCycleTimeMs)
+      {
+        _instructionExecutor.ExecuteSingleInstruction();
+        cpuAccumulator -= CpuCycleTimeMs;
+        instructionCount++;
+      }
+
+      // Catch up timers, but render only once
+      if (timerAccumulator >= TimerCycleTimeMs)
+      {
+        while (timerAccumulator >= TimerCycleTimeMs)
+        {
+          if (_cpu.DT > 0) _cpu.DT--;
+          if (_cpu.ST > 0) _cpu.ST--;
+
+          timerAccumulator -= TimerCycleTimeMs;
+        }
+
+        _display.RenderIfDirty();
+        frameCount++;
+      }
+
+      measurementAccumulator += elapsedMs;
+      if (measurementAccumulator >= 1000.0)
+      {
+        _instructionsPerSecond = instructionCount;
+        _framesPerSecond = frameCount;
+        instructionCount = 0;
+        frameCount = 0;
+        measurementAccumulator = 0;
+      }
+
+      Thread.Sleep(1);
     }
   }
+
+  /// <summary>
+  /// Gets the current number of instructions executed per second.
+  /// </summary>
+  /// <returns>The number of instructions executed per second.</returns>
+  public int GetInstructionsPerSecond() => _instructionsPerSecond;
+
+  /// <summary>
+  /// Gets the current frame rate measured in frames per second.<br></br>
+  /// </summary>
+  /// <remarks>
+  /// Number of frames is incremented each time the <see cref="IDisplay.RenderIfDirty"/> is called.
+  /// </remarks>
+  /// <returns>The number of frames displayed per second.</returns>
+  public int GetFramesPerSecond() => _framesPerSecond;
 }

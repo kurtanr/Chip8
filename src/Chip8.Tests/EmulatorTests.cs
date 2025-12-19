@@ -46,6 +46,7 @@ public class EmulatorTests
   {
     var displayMock = new Mock<IDisplay>(MockBehavior.Strict);
     displayMock.Setup(x => x.Clear());
+    displayMock.Setup(x => x.RenderIfDirty());
 
     var emulator = new Emulator(_cpu, displayMock.Object, _keyboard);
     emulator.LoadApplication(_applicationWhichClearsScreenInLoop);

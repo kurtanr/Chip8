@@ -3,6 +3,7 @@
 /// <summary>
 /// Abstraction of Chip-8 screen.
 /// Screen is a 64x32-pixel monochrome display with the origin (0,0) in the top left corner.
+/// It is recommended to use a buffer for all methods except <see cref="RenderIfDirty"/> to avoid excessive writes to the display.
 /// </summary>
 public interface IDisplay
 {
@@ -32,4 +33,10 @@ public interface IDisplay
   /// <param name="x">Pixel column.</param>
   /// <param name="y">Pixel row.</param>
   void SetPixel(byte x, byte y);
+
+  /// <summary>
+  /// Renders the content if it has been marked as dirty since the last render operation.
+  /// This method is called in a regular interval (e.g. 60 Hz) to update the display.
+  /// </summary>
+  void RenderIfDirty();
 }
