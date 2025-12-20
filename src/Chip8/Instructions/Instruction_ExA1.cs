@@ -18,8 +18,7 @@ public class Instruction_ExA1 : CpuInstruction
   /// <inheritdoc/>
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
-    var pressedKey = keyboard.GetPressedKey();
-    if (cpu.V[Decoded.x] != pressedKey)
+    if (!keyboard.IsKeyDown(cpu.V[Decoded.x]))
     {
       cpu.PC += 2;
     }

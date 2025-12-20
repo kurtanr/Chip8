@@ -6,9 +6,13 @@
 public interface IKeyboard
 {
   /// <summary>
-  /// Returns last key pressed.
-  /// Returns null if no key was pressed since the last check.
+  /// Returns true if the given Chip-8 key (0x0–0xF) is currently held down.
   /// </summary>
-  /// <returns>Numeric representation of pressed key, or null if no key was pressed.</returns>
-  byte? GetPressedKey();
+  bool IsKeyDown(byte key);
+
+  /// <summary>
+  /// Blocks until any key is pressed and returns it.
+  /// Used only by <see cref="Instructions.Instruction_Fx0A"/>.
+  /// </summary>
+  byte WaitForKeyPress();
 }
