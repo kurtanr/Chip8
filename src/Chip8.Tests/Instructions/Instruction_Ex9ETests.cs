@@ -12,13 +12,14 @@ public class Instruction_Ex9ETests : BaseInstructionTests
   {
     var decodedInstruction = new DecodedInstruction(0xE19E);
     var cpu = new Cpu();
-    cpu.V[1] = 0x2;
+    byte pressedKey = 0x2;
+    cpu.V[1] = pressedKey;
 
     var mockSequence = new MockSequence();
     var keyboardMock = new Mock<IKeyboard>(MockBehavior.Strict);
-    keyboardMock.InSequence(mockSequence).Setup(x => x.GetPressedKey()).Returns((byte?)null);
-    keyboardMock.InSequence(mockSequence).Setup(x => x.GetPressedKey()).Returns(1);
-    keyboardMock.InSequence(mockSequence).Setup(x => x.GetPressedKey()).Returns(2);
+    keyboardMock.InSequence(mockSequence).Setup(x => x.IsKeyDown(pressedKey)).Returns(false);
+    keyboardMock.InSequence(mockSequence).Setup(x => x.IsKeyDown(pressedKey)).Returns(true);
+    keyboardMock.InSequence(mockSequence).Setup(x => x.IsKeyDown(pressedKey)).Returns(false);
     var keyboard = keyboardMock.Object;
 
     var instruction = new Instruction_Ex9E(decodedInstruction);
@@ -29,11 +30,12 @@ public class Instruction_Ex9ETests : BaseInstructionTests
     Assert.That(cpu.PC, Is.EqualTo(oldPC));
 
     instruction.Execute(cpu, MockedDisplay, keyboard);
-    Assert.That(cpu.PC, Is.EqualTo(oldPC));
-
-    instruction.Execute(cpu, MockedDisplay, keyboard);
     Assert.That(cpu.PC, Is.EqualTo(oldPC + 2));
 
-    keyboardMock.Verify(x => x.GetPressedKey(), Times.Exactly(3));
+    oldPC = cpu.PC;
+    instruction.Execute(cpu, MockedDisplay, keyboard);
+    Assert.That(cpu.PC, Is.EqualTo(oldPC));
+
+    keyboardMock.Verify(x => x.IsKeyDown(pressedKey), Times.Exactly(3));
   }
 }
