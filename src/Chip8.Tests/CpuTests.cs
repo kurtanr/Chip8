@@ -42,7 +42,26 @@ public class CpuTests
     cpu.Reset();
 
     Assert.That(cpu.Stack, Is.Empty);
-    CollectionAssert.AreEqual(new ushort[Cpu.MemorySizeInBytes], cpu.Memory);
+
+    // Load the expected font bytes from the implementation and verify memory exactly matches
+    var expectedFont = FontData.Create();
+    int fontStart = Cpu.FontMemoryAddress;
+    int fontEndExclusive = fontStart + expectedFont.Count;
+
+    for (int i = 0; i < Cpu.MemorySizeInBytes; i++)
+    {
+      if (i >= fontStart && i < fontEndExclusive)
+      {
+        // Font region must match the FontData exactly
+        Assert.That(cpu.Memory[i], Is.EqualTo(expectedFont[i - fontStart]),
+          $"Memory at 0x{i:X3} expected to match font byte data after Reset.");
+      }
+      else
+      {
+        Assert.That(cpu.Memory[i], Is.EqualTo(0),
+          $"Memory at 0x{i:X3} expected to be 0 after Reset.");
+      }
+    }
   }
 
   [Test]

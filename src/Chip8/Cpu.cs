@@ -13,8 +13,15 @@ public class Cpu
   public static readonly ushort MemoryAddressOfFirstInstruction = 0x200;    // 512
   public static readonly ushort MemoryAddressOfLastInstruction = 0xFFF - 1; // 4094
 
-  // Font data begins at 0x000
-  private static readonly FontData FontData = new FontData();
+  /// <summary>
+  /// Font data begins at 0x050 (classic Chip-8 convention).
+  /// </summary>
+  public static readonly ushort FontMemoryAddress = 0x050;
+
+  /// <summary>
+  /// Contains the font sprites used by the Chip-8 system.
+  /// </summary>
+  private static readonly FontData FontData = FontData.Create();
 
   #region Fields and properties
 
@@ -109,7 +116,6 @@ public class Cpu
   {
     AllowQuirks = allowQuirks;
     Reset();
-    FontData.Data.CopyTo(Memory, 0);
   }
 
   /// <summary>
@@ -132,6 +138,8 @@ public class Cpu
     {
       Memory[i] = 0;
     }
+
+    FontData.CopyTo(Memory, FontMemoryAddress);
   }
 
   #endregion
