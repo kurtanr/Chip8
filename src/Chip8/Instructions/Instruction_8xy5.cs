@@ -6,7 +6,9 @@ namespace Chip8.Instructions;
 /// Set Vx = Vx - Vy, set VF = NOT borrow.
 /// </summary>
 /// <remarks>
-/// If Vx >= Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+/// If Vx >= Vy, then VF is set to 1, otherwise 0.<br></br>
+/// Then Vy is subtracted from Vx, and the results stored in Vx.<br></br>
+/// NOTE: Subtraction is byte-wise subtraction with wrap-around (e.g., 0 - 1 = 255).
 /// </remarks>
 public class Instruction_8xy5 : CpuInstruction
 {
@@ -19,13 +21,19 @@ public class Instruction_8xy5 : CpuInstruction
   /// <inheritdoc/>
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
-    if (Decoded.x == 0xF)
+    if (Decoded.x == 0xF && !cpu.AllowQuirks)
     {
       throw new InvalidOperationException("Cannot use VF as Vx register of SUB operation. VF is already storing the !borrow flag so it cannot store the result also.");
     }
 
-    var sum = Math.Abs(cpu.V[Decoded.x] - cpu.V[Decoded.y]);
-    cpu.V[0xF] = (cpu.V[Decoded.x] >= cpu.V[Decoded.y]) ? (byte)1 : (byte)0;
-    cpu.V[Decoded.x] = (byte)sum;
+    // Read as ints to avoid byte arithmetic surprises
+    int vx = cpu.V[Decoded.x];
+    int vy = cpu.V[Decoded.y];
+
+    // VF = 1 when no borrow (Vx >= Vy), otherwise 0
+    cpu.V[0xF] = (byte)(vx >= vy ? 1 : 0);
+
+    // Store result modulo 256 (byte cast wraps)
+    cpu.V[Decoded.x] = (byte)(vx - vy);
   }
 }
