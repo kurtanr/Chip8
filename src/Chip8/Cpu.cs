@@ -93,7 +93,19 @@ public class Cpu
 
   #region Constructor and methods
 
-  public Cpu(bool allowQuirks = false)
+  /// <summary>
+  /// Initializes a new instance of the <see cref="Cpu"/> class with default settings.
+  /// </summary>
+  public Cpu()
+    : this(false)
+  {
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="Cpu"/> class with explicitly set <paramref name="allowQuirks"/>.
+  /// </summary>
+  /// <param name="allowQuirks">Used to set <see cref="Cpu.AllowQuirks"/> property.</param>
+  public Cpu(bool allowQuirks)
   {
     AllowQuirks = allowQuirks;
     Reset();
