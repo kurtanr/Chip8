@@ -7,8 +7,8 @@ namespace Chip8.Tests.Instructions;
 [TestFixture]
 public class Instruction_8xy7Tests : BaseInstructionTests
 {
-  [TestCase(0xFE, 0x01, 0xFD, 0)]
   [TestCase(0x01, 0xFE, 0xFD, 1)]
+  [TestCase(0x02, 0x01, 0xFF, 0)]
   [TestCase(0x02, 0x02, 0x00, 1)]
   public void Executing_Instruction_8xy7_WorksAsExpected(byte value1, byte value2, byte expectedResult, byte expectedVF)
   {
@@ -26,12 +26,28 @@ public class Instruction_8xy7Tests : BaseInstructionTests
   }
 
   [Test]
-  public void Executing_Instruction_8xy7_WithVx_SetToVF_ThrowsException()
+  public void Executing_Instruction_8xy7_WithVx_SetToVF_WithQuirksNotAllowed_ThrowsException()
   {
     var cpu = new Cpu();
     var decodedInstruction = new DecodedInstruction(0x8FB7);
 
     var instruction = new Instruction_8xy7(decodedInstruction);
     Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
+  }
+
+  [Test]
+  public void Executing_Instruction_8xy7_WithVx_SetToVF_WithQuirksAllowed_WorksAsExpected()
+  {
+    var cpu = new Cpu(true);
+    var decodedInstruction = new DecodedInstruction(0x8FB7);
+    cpu.V[decodedInstruction.x] = 0x01;
+    cpu.V[decodedInstruction.y] = 0xFE;
+    byte expectedResult = 0xFD;
+
+    var instruction = new Instruction_8xy7(decodedInstruction);
+    instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
+
+    Assert.That(cpu.V[decodedInstruction.x], Is.EqualTo(expectedResult));
+    Assert.That(cpu.V[0xF], Is.EqualTo(expectedResult));
   }
 }

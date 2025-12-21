@@ -75,12 +75,27 @@ public class Cpu
   /// </summary>
   public readonly byte[] Memory = new byte[MemorySizeInBytes];
 
+  /// <summary>
+  /// Gets a value indicating whether the system operates in quirks mode.<br></br>
+  /// When quirks mode is set to false (default), following CPU instructions will throw an 
+  /// <see cref="InvalidOperationException"/> if unusual memory operations are attempted:<br></br>
+  /// - <see cref="Instructions.Instruction_8xy5"/> when Vx is set to VF<br></br>
+  /// - <see cref="Instructions.Instruction_8xy7"/> when Vx is set to VF<br></br>
+  /// </summary>
+  /// <remarks>
+  /// Standard Chip-8 ROMs usually do not need the quirks mode enabled.<br></br>
+  /// The only exception to that is the 
+  /// <see href="https://github.com/Timendus/chip8-test-suite">CHIP-8 test suite by Timendus</see>.
+  /// </remarks>
+  public bool AllowQuirks { get; }
+
   #endregion
 
   #region Constructor and methods
 
-  public Cpu()
+  public Cpu(bool allowQuirks = false)
   {
+    AllowQuirks = allowQuirks;
     Reset();
     FontData.Data.CopyTo(Memory, 0);
   }
