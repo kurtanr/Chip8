@@ -22,6 +22,8 @@ public class Instruction_Fx29 : CpuInstruction
   {
     var vxValue = cpu.V[Decoded.x];
     var hexDigit = vxValue & 0xF;
-    cpu.I = (ushort)(hexDigit * 5);
+
+    // Fonts are stored at Cpu.FontMemoryAddress; each digit sprite is 5 bytes
+    cpu.I = (ushort)(Cpu.FontMemoryAddress + hexDigit * 5);
   }
 }

@@ -17,7 +17,7 @@ public class Instruction_Fx29Tests : BaseInstructionTests
     var instruction = new Instruction_Fx29(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
-    Assert.That(cpu.I, Is.EqualTo(15));
+    Assert.That(cpu.I, Is.EqualTo(Cpu.FontMemoryAddress + 15));
     Assert.That(instruction.Mnemonic, Is.EqualTo($"LD F, V{decodedInstruction.x:X}"));
   }
 
@@ -31,7 +31,7 @@ public class Instruction_Fx29Tests : BaseInstructionTests
     var instruction = new Instruction_Fx29(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
-    Assert.That(cpu.I, Is.EqualTo(15));
+    Assert.That(cpu.I, Is.EqualTo(Cpu.FontMemoryAddress + 15));
     Assert.That(instruction.Mnemonic, Is.EqualTo($"LD F, V{decodedInstruction.x:X}"));
   }
 }
