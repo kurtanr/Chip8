@@ -20,7 +20,7 @@ public class Instruction_8xy4 : CpuInstruction
   /// <inheritdoc/>
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
-    if (Decoded.x == 0xF)
+    if (Decoded.x == 0xF && !cpu.AllowQuirks)
     {
       throw new InvalidOperationException("Cannot use VF as Vx register of ADD operation. VF is already storing the carry flag so it cannot store the result also.");
     }

@@ -20,7 +20,7 @@ public class Instruction_Fx33Tests : BaseInstructionTests
     Assert.That(cpu.Memory[initialIValue], Is.EqualTo(expectedHundreds));
     Assert.That(cpu.Memory[initialIValue + 1], Is.EqualTo(expectedTens));
     Assert.That(cpu.Memory[initialIValue + 2], Is.EqualTo(expectedOnes));
-    Assert.That(cpu.I, Is.EqualTo(initialIValue + 2));
+    Assert.That(cpu.I, Is.EqualTo(initialIValue));
     Assert.That(instruction.Mnemonic, Is.EqualTo($"LD B, V{decodedInstruction.x:X}"));
   }
 
