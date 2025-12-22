@@ -45,5 +45,5 @@ To provide:
 
 -   [Wikipedia CHIP-8 article](https://en.wikipedia.org/wiki/CHIP-8)
 -   [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
--   [Tips on writing disassembler and emulator](http://www.emulator101.com/introduction-to-chip-8.html)
+-   [CHIP-8 test suite by Timendus](https://github.com/Timendus/chip8-test-suite)
 -   [CHIP-8 ROMs that are in the public domain](https://archive.org/details/Chip-8RomsThatAreInThePublicDomain)

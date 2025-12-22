@@ -19,7 +19,7 @@ public class Instruction_8xy6 : CpuInstruction
   /// <inheritdoc/>
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
-    if (Decoded.x == 0xF)
+    if (Decoded.x == 0xF && !cpu.AllowQuirks)
     {
       throw new InvalidOperationException("Cannot use VF as Vx register of SHR operation. VF is already storing the least-significant bit of Vx so it cannot store the result also.");
     }

@@ -32,8 +32,8 @@ public class Instruction_Fx33 : CpuInstruction
     var tens = (cpu.V[Decoded.x] - hundreds * 100) / 10;
     var ones = cpu.V[Decoded.x] % 10;
 
-    cpu.Memory[cpu.I++] = (byte)hundreds;
-    cpu.Memory[cpu.I++] = (byte)tens;
-    cpu.Memory[cpu.I] = (byte)ones;
+    cpu.Memory[cpu.I] = (byte)hundreds;
+    cpu.Memory[cpu.I + 1] = (byte)tens;
+    cpu.Memory[cpu.I + 2] = (byte)ones;
   }
 }
