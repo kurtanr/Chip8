@@ -25,7 +25,8 @@ public class Instruction_8xy6 : CpuInstruction
     }
 
     cpu.V[Decoded.x] = cpu.V[Decoded.y];
-    cpu.V[0xF] = (byte)(cpu.V[Decoded.x] & 0x1);
+    var vf = (byte)(cpu.V[Decoded.x] & 0x01); // LSB
     cpu.V[Decoded.x] >>= 1;
+    cpu.V[0xF] = vf;
   }
 }
