@@ -25,8 +25,8 @@ public class Instruction_8xyE : CpuInstruction
     }
 
     cpu.V[Decoded.x] = cpu.V[Decoded.y];
-    cpu.V[0xF] = ((cpu.V[Decoded.x] & 0x8) > 0) ? (byte)1 : (byte)0;
-    cpu.V[Decoded.x] &= 0x7F; // set MSB to 0
+    var vf = (byte)((cpu.V[Decoded.x] & 0b1000_0000) >> 7); // MSB
     cpu.V[Decoded.x] <<= 1;
+    cpu.V[0xF] = vf;
   }
 }
