@@ -7,15 +7,16 @@ namespace Chip8.Tests.Instructions;
 [TestFixture]
 public class Instruction_8xy5Tests : BaseInstructionTests
 {
-  [TestCase(0xFE, 0x01, 0xFD, 1)]
-  [TestCase(0x01, 0x02, 0xFF, 0)]
-  [TestCase(0x02, 0x02, 0x00, 1)]
-  public void Executing_Instruction_8xy5_WorksAsExpected(byte value1, byte value2, byte expectedResult, byte expectedVF)
+  [TestCase(0xFE, 0x01, 0xFD, 0x01)]
+  [TestCase(0x01, 0x02, 0xFF, 0x00)]
+  [TestCase(0x02, 0x02, 0x00, 0x01)]
+  public void Executing_Instruction_8xy5_WorksAsExpected(
+    byte vx, byte vy, byte expectedResult, byte expectedVF)
   {
     var cpu = new Cpu();
     var decodedInstruction = new DecodedInstruction(0x8AB5);
-    cpu.V[decodedInstruction.x] = value1;
-    cpu.V[decodedInstruction.y] = value2;
+    cpu.V[decodedInstruction.x] = vx;
+    cpu.V[decodedInstruction.y] = vy;
 
     var instruction = new Instruction_8xy5(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
@@ -35,14 +36,16 @@ public class Instruction_8xy5Tests : BaseInstructionTests
     Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
   }
 
-  [Test]
-  public void Executing_Instruction_8xy5_WithVx_SetToVF_WithQuirksAllowed_WorksAsExpected()
+  [TestCase(0xFE, 0x01, 0x01, 0x01)]
+  [TestCase(0x01, 0xFE, 0x00, 0x00)]
+  [TestCase(0x02, 0x02, 0x01, 0x01)]
+  public void Executing_Instruction_8xy5_WithVx_SetToVF_WithQuirksAllowed_WorksAsExpected(
+    byte vx, byte vy, byte expectedResult, byte expectedVF)
   {
     var cpu = new Cpu(true);
     var decodedInstruction = new DecodedInstruction(0x8FB5);
-    cpu.V[decodedInstruction.x] = 0xFE;
-    cpu.V[decodedInstruction.y] = 0x01;
-    byte expectedResult = 0xFD;
+    cpu.V[decodedInstruction.x] = vx;
+    cpu.V[decodedInstruction.y] = vy;
 
     var instruction = new Instruction_8xy5(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);

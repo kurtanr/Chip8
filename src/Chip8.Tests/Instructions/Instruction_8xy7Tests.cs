@@ -7,15 +7,16 @@ namespace Chip8.Tests.Instructions;
 [TestFixture]
 public class Instruction_8xy7Tests : BaseInstructionTests
 {
-  [TestCase(0x01, 0xFE, 0xFD, 1)]
-  [TestCase(0x02, 0x01, 0xFF, 0)]
-  [TestCase(0x02, 0x02, 0x00, 1)]
-  public void Executing_Instruction_8xy7_WorksAsExpected(byte value1, byte value2, byte expectedResult, byte expectedVF)
+  [TestCase(0x01, 0xFE, 0xFD, 0x01)]
+  [TestCase(0x02, 0x01, 0xFF, 0x00)]
+  [TestCase(0x02, 0x02, 0x00, 0x01)]
+  public void Executing_Instruction_8xy7_WorksAsExpected(
+    byte vx, byte vy, byte expectedResult, byte expectedVF)
   {
     var cpu = new Cpu();
     var decodedInstruction = new DecodedInstruction(0x8AB7);
-    cpu.V[decodedInstruction.x] = value1;
-    cpu.V[decodedInstruction.y] = value2;
+    cpu.V[decodedInstruction.x] = vx;
+    cpu.V[decodedInstruction.y] = vy;
 
     var instruction = new Instruction_8xy7(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
@@ -35,19 +36,21 @@ public class Instruction_8xy7Tests : BaseInstructionTests
     Assert.Throws<InvalidOperationException>(() => instruction.Execute(cpu, MockedDisplay, MockedKeyboard));
   }
 
-  [Test]
-  public void Executing_Instruction_8xy7_WithVx_SetToVF_WithQuirksAllowed_WorksAsExpected()
+  [TestCase(0x01, 0xFE, 0x01, 0x01)]
+  [TestCase(0x02, 0x01, 0x00, 0x00)]
+  [TestCase(0x02, 0x02, 0x01, 0x01)]
+  public void Executing_Instruction_8xy7_WithVx_SetToVF_WithQuirksAllowed_WorksAsExpected(
+    byte vx, byte vy, byte expectedResult, byte expectedVF)
   {
     var cpu = new Cpu(true);
     var decodedInstruction = new DecodedInstruction(0x8FB7);
-    cpu.V[decodedInstruction.x] = 0x01;
-    cpu.V[decodedInstruction.y] = 0xFE;
-    byte expectedResult = 0xFD;
+    cpu.V[decodedInstruction.x] = vx;
+    cpu.V[decodedInstruction.y] = vy;
 
     var instruction = new Instruction_8xy7(decodedInstruction);
     instruction.Execute(cpu, MockedDisplay, MockedKeyboard);
 
     Assert.That(cpu.V[decodedInstruction.x], Is.EqualTo(expectedResult));
-    Assert.That(cpu.V[0xF], Is.EqualTo(expectedResult));
+    Assert.That(cpu.V[0xF], Is.EqualTo(expectedVF));
   }
 }

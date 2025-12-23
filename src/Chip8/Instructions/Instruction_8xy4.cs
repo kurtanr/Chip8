@@ -26,7 +26,7 @@ public class Instruction_8xy4 : CpuInstruction
     }
 
     var sum = cpu.V[Decoded.x] + cpu.V[Decoded.y];
-    cpu.V[0xF] = (sum > 0xFF) ? (byte)1 : (byte)0;
     cpu.V[Decoded.x] = (byte)sum;
+    cpu.V[0xF] = (sum > 0xFF) ? (byte)1 : (byte)0;
   }
 }
