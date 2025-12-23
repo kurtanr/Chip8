@@ -30,10 +30,10 @@ public class Instruction_8xy5 : CpuInstruction
     int vx = cpu.V[Decoded.x];
     int vy = cpu.V[Decoded.y];
 
-    // VF = 1 when no borrow (Vx >= Vy), otherwise 0
-    cpu.V[0xF] = (byte)(vx >= vy ? 1 : 0);
-
     // Store result modulo 256 (byte cast wraps)
     cpu.V[Decoded.x] = (byte)(vx - vy);
+
+    // VF = 1 when no borrow (Vx >= Vy), otherwise 0
+    cpu.V[0xF] = (byte)(vx >= vy ? 1 : 0);
   }
 }
