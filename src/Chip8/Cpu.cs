@@ -84,6 +84,7 @@ public class Cpu
 
   /// <summary>
   /// Gets a value indicating whether the system operates in quirks mode.<br></br>
+  /// <br></br>
   /// When quirks mode is set to false (default), following CPU instructions will throw an 
   /// <see cref="InvalidOperationException"/> if unusual memory operations are attempted:<br></br>
   /// - <see cref="Instructions.Instruction_8xy4"/> when Vx is set to VF<br></br>
@@ -91,11 +92,18 @@ public class Cpu
   /// - <see cref="Instructions.Instruction_8xy6"/> when Vx is set to VF<br></br>
   /// - <see cref="Instructions.Instruction_8xy7"/> when Vx is set to VF<br></br>
   /// - <see cref="Instructions.Instruction_8xyE"/> when Vx is set to VF<br></br>
+  /// <br></br>
+  /// Additionally, when quirks mode is set to false (default), following CPU instructions will not reset VF:<br></br>
+  /// - <see cref="Instructions.Instruction_8xy1"/><br></br>
+  /// - <see cref="Instructions.Instruction_8xy2"/><br></br>
+  /// - <see cref="Instructions.Instruction_8xy3"/><br></br>
   /// </summary>
   /// <remarks>
   /// Standard Chip-8 ROMs usually do not need the quirks mode enabled.<br></br>
   /// The only exception to that is the 
-  /// <see href="https://github.com/Timendus/chip8-test-suite">CHIP-8 test suite by Timendus</see>.
+  /// <see href="https://github.com/Timendus/chip8-test-suite">CHIP-8 test suite by Timendus</see>.<br></br>
+  /// If developing new Chip-8 ROMs, it is recommended to keep quirks mode set to false (stricter memory checks
+  /// might prevent unintended bugs in the program).
   /// </remarks>
   public bool AllowQuirks { get; }
 
