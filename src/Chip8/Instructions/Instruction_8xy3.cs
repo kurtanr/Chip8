@@ -20,5 +20,10 @@ public class Instruction_8xy3 : CpuInstruction
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
     cpu.V[Decoded.x] ^= cpu.V[Decoded.y];
+
+    if (cpu.AllowQuirks)
+    {
+      cpu.V[0xF] = 0;
+    }
   }
 }
