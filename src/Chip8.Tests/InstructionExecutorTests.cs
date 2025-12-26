@@ -61,11 +61,10 @@ public class InstructionExecutorTests
   }
 
   [Test]
-  public void ExecutingInstruction_DecrementsTimers()
+  public void ExecutingInstruction_DoesNotDecrementTimers()
   {
     var cpu = new Cpu();
     cpu.Memory[Cpu.MemoryAddressOfFirstInstruction + 1] = 0xE0; // CLS instruction
-    cpu.Memory[Cpu.MemoryAddressOfFirstInstruction + 3] = 0xE0; // CLS instruction
 
     // initial value of timers
     cpu.DT = 1;
@@ -73,14 +72,8 @@ public class InstructionExecutorTests
 
     var instructionExecutor = new InstructionExecutor(cpu, _display, _keyboard);
 
-    // first execution
     instructionExecutor.ExecuteSingleInstruction();
-    Assert.That(cpu.DT, Is.EqualTo(0));
-    Assert.That(cpu.ST, Is.EqualTo(0));
-
-    // second execution
-    instructionExecutor.ExecuteSingleInstruction();
-    Assert.That(cpu.DT, Is.EqualTo(0));
-    Assert.That(cpu.ST, Is.EqualTo(0));
+    Assert.That(cpu.DT, Is.EqualTo(1));
+    Assert.That(cpu.ST, Is.EqualTo(1));
   }
 }

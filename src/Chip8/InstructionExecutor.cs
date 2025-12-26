@@ -39,18 +39,6 @@ public class InstructionExecutor
       _cpu.PC += 2;
     }
 
-    // decrement delay timer
-    if (_cpu.DT > 0)
-    {
-      _cpu.DT--;
-    }
-
-    // decrement sound timer
-    if (_cpu.ST > 0)
-    {
-      _cpu.ST--;
-    }
-
     return cpuInstruction;
   }
 
