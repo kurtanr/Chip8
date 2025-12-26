@@ -19,8 +19,8 @@ public class Emulator : IDisposable
   private readonly InstructionExecutor _instructionExecutor;
   private readonly StringBuilder _stringBuilder = new StringBuilder();
 
-  private int _instructionsPerSecond = 0;
-  private int _framesPerSecond = 0;
+  private int _instructionsPerSecond;
+  private int _framesPerSecond;
 
   private bool _isDisposed;
 
@@ -309,8 +309,14 @@ public class Emulator : IDisposable
       {
         while (timerAccumulator >= TimerCycleTimeMs)
         {
-          if (_cpu.DT > 0) _cpu.DT--;
-          if (_cpu.ST > 0) _cpu.ST--;
+          if (_cpu.DT > 0)
+          {
+            _cpu.DT--;
+          }
+          if (_cpu.ST > 0)
+          {
+            _cpu.ST--;
+          }
 
           timerAccumulator -= TimerCycleTimeMs;
         }

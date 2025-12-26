@@ -127,6 +127,25 @@ public class EmulatorTests
     Assert.DoesNotThrow(() => _emulator.RunContinueApplication());
   }
 
+  [Test]
+  public async Task RunContinueApplication_DecrementsDelayAndSoundTimer()
+  {
+    _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+    _cpu.DT = 10;
+    _cpu.ST = 10;
+
+    _emulator.RunContinueApplication();
+
+    await Task.Delay(200).ConfigureAwait(false);
+
+    _emulator.PauseApplication();
+
+    Assert.That(_cpu.DT, Is.LessThan(10));
+    Assert.That(_cpu.ST, Is.LessThan(10));
+
+    _emulator.StopApplication();
+  }
+
   #endregion
 
   #region PauseApplication
@@ -366,6 +385,40 @@ public class EmulatorTests
     _emulator.Dispose();
 
     Assert.That(_emulator.IsApplicationRunning, Is.False);
+  }
+
+  #endregion
+
+  #region GetInstructionsPerSecond and GetFramesPerSecond
+
+  [Test]
+  public async Task GetIpsFps_WithRunningApplication_ReturnsExpectedValues()
+  {
+    _emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+    _emulator.RunContinueApplication();
+
+    await Task.Delay(1100).ConfigureAwait(false);
+
+    var ips = _emulator.GetInstructionsPerSecond();
+    var fps = _emulator.GetFramesPerSecond();
+
+    _emulator.StopApplication();
+
+    Assert.That(ips, Is.GreaterThan(0));
+    Assert.That(ips, Is.LessThanOrEqualTo(600));
+
+    Assert.That(fps, Is.GreaterThan(0));
+    Assert.That(fps, Is.LessThanOrEqualTo(70));
+  }
+
+  [Test]
+  public void GetIpsFps_WithoutRunningApplication_ReturnsZero()
+  {
+    var ips = _emulator.GetInstructionsPerSecond();
+    var fps = _emulator.GetFramesPerSecond();
+
+    Assert.That(ips, Is.EqualTo(0));
+    Assert.That(fps, Is.EqualTo(0));
   }
 
   #endregion
