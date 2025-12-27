@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chip8.Instructions;
+﻿namespace Chip8.Instructions;
 
 /// <summary>
 /// Set I = location of sprite for digit Vx.

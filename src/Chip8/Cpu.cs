@@ -35,8 +35,6 @@ public class Cpu
   /// </summary>
   public ushort I { get; set; }
 
-  private ushort _pc;
-
   /// <summary>
   /// 16-bit program counter.
   /// Default value is <see cref="MemoryAddressOfFirstInstruction"/>.
@@ -44,21 +42,21 @@ public class Cpu
   /// </summary>
   public ushort PC
   {
-    get { return _pc; }
+    get { return field; }
     set
     {
       if (value < MemoryAddressOfFirstInstruction || value > MemoryAddressOfLastInstruction)
       {
         throw new InvalidOperationException($"Attempting to set program counter to {value} which is outside of allowed range of [{MemoryAddressOfFirstInstruction},{MemoryAddressOfLastInstruction}].");
       }
-      _pc = value;
+      field = value;
     }
   }
 
   /// <summary>
   /// Stack containing a maximum of 16 16-bit values.
   /// </summary>
-  public readonly StackWithMaxDepth Stack = new StackWithMaxDepth();
+  public readonly StackWithMaxDepth Stack = new();
 
   /// <summary>
   /// 8-bit delay timer.
@@ -135,21 +133,11 @@ public class Cpu
   public void Reset()
   {
     Stack.Clear();
-
-    for (int i = 0; i < V.Length; i++)
-    {
-      V[i] = 0;
-    }
-
+    Array.Clear(V);
     PC = MemoryAddressOfFirstInstruction;
     I = 0;
     DT = ST = 0;
-
-    for (int i = 0; i < MemorySizeInBytes; i++)
-    {
-      Memory[i] = 0;
-    }
-
+    Array.Clear(Memory);
     FontData.CopyTo(Memory, FontMemoryAddress);
   }
 

@@ -42,9 +42,8 @@ public class InstructionExecutor
     return cpuInstruction;
   }
 
-  private bool IsInstructionWhichModifiesProgramCounter(CpuInstruction cpuInstruction)
+  private static bool IsInstructionWhichModifiesProgramCounter(CpuInstruction cpuInstruction)
   {
-    return cpuInstruction is Instruction_00EE || cpuInstruction is Instruction_1nnn ||
-      cpuInstruction is Instruction_2nnn || cpuInstruction is Instruction_Bnnn;
+    return cpuInstruction is Instruction_00EE or Instruction_1nnn or Instruction_2nnn or Instruction_Bnnn;
   }
 }

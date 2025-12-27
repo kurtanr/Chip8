@@ -11,7 +11,7 @@ namespace Chip8;
 /// Each character is a 4×5 pixel sprite, stored as 5 bytes.<br></br>
 /// Only the upper 4 bits of each byte are used to represent the pixels.
 /// </remarks>
-public class FontData : ReadOnlyCollection<byte>
+public sealed class FontData : ReadOnlyCollection<byte>
 {
   private FontData(IList<byte> list) : base(list)
   {
@@ -19,8 +19,8 @@ public class FontData : ReadOnlyCollection<byte>
 
   public static FontData Create()
   {
-    var data = new List<byte>
-    {
+    byte[] data =
+    [
       // 0
       0b1111_0000,
       0b1001_0000,
@@ -117,7 +117,7 @@ public class FontData : ReadOnlyCollection<byte>
       0b1111_0000,
       0b1000_0000,
       0b1000_0000
-    };
+    ];
 
     return new FontData(data);
   }
