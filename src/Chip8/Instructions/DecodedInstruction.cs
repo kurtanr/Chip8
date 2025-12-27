@@ -5,7 +5,7 @@ namespace Chip8.Instructions;
 /// <summary>
 /// Instruction decoded from 2 bytes of memory.
 /// </summary>
-public struct DecodedInstruction : IEquatable<DecodedInstruction>
+public readonly struct DecodedInstruction : IEquatable<DecodedInstruction>
 {
   /// <summary>
   /// Entire instruction - 2 bytes long and stored most-significant-byte first.
@@ -57,5 +57,25 @@ public struct DecodedInstruction : IEquatable<DecodedInstruction>
   public bool Equals(DecodedInstruction other)
   {
     return InstructionCode == other.InstructionCode;
+  }
+
+  public override bool Equals(object obj)
+  {
+    return obj is DecodedInstruction other && Equals(other);
+  }
+
+  public override int GetHashCode()
+  {
+    return InstructionCode.GetHashCode();
+  }
+
+  public static bool operator ==(DecodedInstruction left, DecodedInstruction right)
+  {
+    return left.Equals(right);
+  }
+
+  public static bool operator !=(DecodedInstruction left, DecodedInstruction right)
+  {
+    return !left.Equals(right);
   }
 }

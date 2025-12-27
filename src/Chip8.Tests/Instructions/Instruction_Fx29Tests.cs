@@ -1,6 +1,5 @@
 ﻿using Chip8.Instructions;
 using NUnit.Framework;
-using System;
 
 namespace Chip8.Tests.Instructions;
 

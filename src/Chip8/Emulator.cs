@@ -11,13 +11,12 @@ namespace Chip8;
 /// Uses <see cref="Cpu"/>, <see cref="IKeyboard"/> and <see cref="IDisplay"/> to emulate a Chip8 system.<br></br>
 /// Runs CPU at ~500 Hz. Timers (DT,ST) and refresh of the display run at 60 Hz independently of CPU.
 /// </summary>
-public class Emulator : IDisposable
+public sealed class Emulator : IDisposable
 {
   private readonly Cpu _cpu;
   private readonly IDisplay _display;
-  private readonly IKeyboard _keyboard;
   private readonly InstructionExecutor _instructionExecutor;
-  private readonly StringBuilder _stringBuilder = new StringBuilder();
+  private readonly StringBuilder _stringBuilder = new();
 
   private int _instructionsPerSecond;
   private int _framesPerSecond;
@@ -54,7 +53,6 @@ public class Emulator : IDisposable
   {
     _cpu = cpu ?? throw new ArgumentNullException(nameof(cpu));
     _display = display ?? throw new ArgumentNullException(nameof(display));
-    _keyboard = keyboard ?? throw new ArgumentNullException(nameof(keyboard));
 
     _instructionExecutor = new InstructionExecutor(cpu, display, keyboard);
     _executeCycleCancellationTokenSource = new CancellationTokenSource();
@@ -167,15 +165,11 @@ public class Emulator : IDisposable
       // Wait for the execution thread to stop before modifying CPU state
       _executeCycleTask?.Wait(1000);
 
-      // Take a full snapshot of memory, reset CPU (which restores font data),
-      // then restore only the application region so we don't overwrite font/sprite data at 0x000.
       var temp = new byte[Cpu.MemorySizeInBytes];
       Array.Copy(_cpu.Memory, temp, Cpu.MemorySizeInBytes);
 
       _cpu.Reset();
-
-      var appRegionLength = Cpu.MemorySizeInBytes - Cpu.MemoryAddressOfFirstInstruction;
-      Array.Copy(temp, Cpu.MemoryAddressOfFirstInstruction, _cpu.Memory, Cpu.MemoryAddressOfFirstInstruction, appRegionLength);
+      temp.CopyTo(_cpu.Memory, 0);
 
       _display.Clear();
     }
@@ -199,9 +193,9 @@ public class Emulator : IDisposable
       }
     }
 
-    Array result = Array.CreateInstance(typeof(byte), indexOfLastNonZeroByte - Cpu.MemoryAddressOfFirstInstruction + 1);
+    var result = new byte[indexOfLastNonZeroByte - Cpu.MemoryAddressOfFirstInstruction + 1];
     Array.Copy(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction, result, 0, result.Length);
-    return (byte[])result;
+    return result;
   }
 
   /// <summary>
