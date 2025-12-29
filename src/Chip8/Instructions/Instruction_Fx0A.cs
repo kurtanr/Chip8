@@ -17,6 +17,11 @@ public class Instruction_Fx0A : CpuInstruction
   /// <inheritdoc/>
   public override void Execute(Cpu cpu, IDisplay display, IKeyboard keyboard)
   {
-    cpu.V[Decoded.x] = keyboard.WaitForKeyPress();
+    var pressedKey = keyboard.WaitForKeyPressAndRelease();
+    if (pressedKey != null)
+    {
+      cpu.V[Decoded.x] = (byte)pressedKey;
+      cpu.PC += 2;
+    }
   }
 }

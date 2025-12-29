@@ -11,8 +11,10 @@ public interface IKeyboard
   bool IsKeyDown(byte key);
 
   /// <summary>
-  /// Blocks until any key is pressed and returns it.
+  /// Blocks until any key is pressed and released and then returns it.
+  /// While blocking, timers should continue functioning.
   /// Used only by <see cref="Instructions.Instruction_Fx0A"/>.
   /// </summary>
-  byte WaitForKeyPress();
+  /// <returns>Pressed and released key (0x0–0xF) or null if no key was pressed and released.</returns>
+  byte? WaitForKeyPressAndRelease();
 }
