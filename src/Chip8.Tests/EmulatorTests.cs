@@ -57,13 +57,14 @@ public class EmulatorTests
     var emulator = new Emulator(_cpu, displayMock.Object, _keyboard, soundMock.Object);
     emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
     displayMock.Verify(x => x.Clear(), Times.Once);
+    soundMock.Verify(x => x.Stop(), Times.Once);
 
     emulator.ExecuteSingleCycle();
     displayMock.Verify(x => x.Clear(), Times.Exactly(2));
 
     emulator.Reset();
     displayMock.Verify(x => x.Clear(), Times.Exactly(3));
-    soundMock.Verify(x => x.Stop(), Times.Once);
+    soundMock.Verify(x => x.Stop(), Times.Exactly(2));
 
     Assert.That(_cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
     Assert.That(emulator.IsApplicationLoaded, Is.False);
