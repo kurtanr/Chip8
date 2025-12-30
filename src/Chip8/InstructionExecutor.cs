@@ -44,6 +44,6 @@ public class InstructionExecutor
 
   private static bool IsInstructionWhichModifiesProgramCounter(CpuInstruction cpuInstruction)
   {
-    return cpuInstruction is Instruction_00EE or Instruction_1nnn or Instruction_2nnn or Instruction_Bnnn;
+    return cpuInstruction is Instruction_00EE or Instruction_1nnn or Instruction_2nnn or Instruction_Bnnn or Instruction_Fx0A;
   }
 }
