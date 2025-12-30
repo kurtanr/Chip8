@@ -19,7 +19,7 @@ public class CompilationAndDecompilationOfSampleApplications
     {
       var originalGame = File.ReadAllBytes(file);
 
-      var emulator = new Emulator(new Cpu(), new Mock<IDisplay>().Object, new Mock<IKeyboard>().Object);
+      var emulator = new Emulator(new Cpu(), new Mock<IDisplay>().Object, new Mock<IKeyboard>().Object, new Mock<ISound>().Object);
       emulator.LoadApplication(originalGame);
 
       var gameFromEmulator = emulator.GetApplication();

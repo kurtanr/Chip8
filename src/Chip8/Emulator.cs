@@ -15,6 +15,7 @@ public sealed class Emulator : IDisposable
 {
   private readonly Cpu _cpu;
   private readonly IDisplay _display;
+  private readonly ISound _sound;
   private readonly InstructionExecutor _instructionExecutor;
   private readonly StringBuilder _stringBuilder = new();
 
@@ -22,6 +23,7 @@ public sealed class Emulator : IDisposable
   private int _framesPerSecond;
 
   private bool _isDisposed;
+  private bool _isSoundPlaying;
 
   private readonly CancellationTokenSource _executeCycleCancellationTokenSource;
   private Task _executeCycleTask;
@@ -49,10 +51,11 @@ public sealed class Emulator : IDisposable
   /// </summary>
   public bool IsApplicationLoaded { get; private set; }
 
-  public Emulator(Cpu cpu, IDisplay display, IKeyboard keyboard)
+  public Emulator(Cpu cpu, IDisplay display, IKeyboard keyboard, ISound sound)
   {
     _cpu = cpu ?? throw new ArgumentNullException(nameof(cpu));
     _display = display ?? throw new ArgumentNullException(nameof(display));
+    _sound = sound ?? throw new ArgumentNullException(nameof(sound));
 
     _instructionExecutor = new InstructionExecutor(cpu, display, keyboard);
     _executeCycleCancellationTokenSource = new CancellationTokenSource();
@@ -65,6 +68,7 @@ public sealed class Emulator : IDisposable
   {
     _cpu.Reset();
     _display.Clear();
+    _sound.Stop();
 
     IsApplicationLoaded = false;
     IsApplicationRunning = false;
@@ -251,6 +255,8 @@ public sealed class Emulator : IDisposable
     IsApplicationRunning = false;
     IsApplicationPaused = false;
 
+    _sound.Stop();
+
     _executeCycleCancellationTokenSource.Cancel();
     if (_executeCycleTask != null)
     {
@@ -278,6 +284,13 @@ public sealed class Emulator : IDisposable
     {
       if (!IsApplicationRunning)
       {
+        // Stop sound when application is paused or stopped
+        if (_isSoundPlaying)
+        {
+          _sound.Stop();
+          _isSoundPlaying = false;
+        }
+
         Thread.Sleep(5);
         lastTicks = stopwatch.ElapsedTicks;
         continue;
@@ -313,6 +326,24 @@ public sealed class Emulator : IDisposable
           }
 
           timerAccumulator -= TimerCycleTimeMs;
+        }
+
+        // Update sound state
+        if (_cpu.ST > 0)
+        {
+          if (!_isSoundPlaying)
+          {
+            _sound.Play();
+            _isSoundPlaying = true;
+          }
+        }
+        else
+        {
+          if (_isSoundPlaying)
+          {
+            _sound.Stop();
+            _isSoundPlaying = false;
+          }
         }
 
         _display.RenderIfDirty();
