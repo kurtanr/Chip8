@@ -11,6 +11,7 @@ public class EmulatorTests
   private Cpu _cpu;
   private IDisplay _display;
   private IKeyboard _keyboard;
+  private ISound _sound;
   private Emulator _emulator;
 
   private readonly byte[] _applicationWhichClearsScreenInLoop = new byte[] { 0x00, 0xE0, 0x12, 0x00 };
@@ -21,7 +22,8 @@ public class EmulatorTests
     _cpu = new Cpu();
     _display = new Mock<IDisplay>(MockBehavior.Loose).Object;
     _keyboard = new Mock<IKeyboard>(MockBehavior.Strict).Object;
-    _emulator = new Emulator(_cpu, _display, _keyboard);
+    _sound = new Mock<ISound>(MockBehavior.Loose).Object;
+    _emulator = new Emulator(_cpu, _display, _keyboard, _sound);
   }
 
   [TearDown]
@@ -33,10 +35,11 @@ public class EmulatorTests
   [Test]
   public void Constructor_ArgumentValidation_Works()
   {
-    Assert.DoesNotThrow(() => new Emulator(_cpu, _display, _keyboard));
-    Assert.Throws<ArgumentNullException>(() => new Emulator(null, _display, _keyboard));
-    Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, null, _keyboard));
-    Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, _display, null));
+    Assert.DoesNotThrow(() => new Emulator(_cpu, _display, _keyboard, _sound));
+    Assert.Throws<ArgumentNullException>(() => new Emulator(null, _display, _keyboard, _sound));
+    Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, null, _keyboard, _sound));
+    Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, _display, null, _sound));
+    Assert.Throws<ArgumentNullException>(() => new Emulator(_cpu, _display, _keyboard, null));
   }
 
   #region Reset
@@ -48,15 +51,20 @@ public class EmulatorTests
     displayMock.Setup(x => x.Clear());
     displayMock.Setup(x => x.RenderIfDirty());
 
-    var emulator = new Emulator(_cpu, displayMock.Object, _keyboard);
+    var soundMock = new Mock<ISound>(MockBehavior.Strict);
+    soundMock.Setup(x => x.Stop());
+
+    var emulator = new Emulator(_cpu, displayMock.Object, _keyboard, soundMock.Object);
     emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
     displayMock.Verify(x => x.Clear(), Times.Once);
+    soundMock.Verify(x => x.Stop(), Times.Once);
 
     emulator.ExecuteSingleCycle();
     displayMock.Verify(x => x.Clear(), Times.Exactly(2));
 
     emulator.Reset();
     displayMock.Verify(x => x.Clear(), Times.Exactly(3));
+    soundMock.Verify(x => x.Stop(), Times.Exactly(2));
 
     Assert.That(_cpu.PC, Is.EqualTo(Cpu.MemoryAddressOfFirstInstruction));
     Assert.That(emulator.IsApplicationLoaded, Is.False);
@@ -193,6 +201,31 @@ public class EmulatorTests
     _emulator.PauseApplication();
 
     Assert.DoesNotThrow(() => _emulator.PauseApplication());
+  }
+
+  [Test]
+  public async Task PauseApplication_WithPlayingSound_StopsSound()
+  {
+    var soundMock = new Mock<ISound>(MockBehavior.Strict);
+    soundMock.Setup(x => x.Play());
+    soundMock.Setup(x => x.Stop());
+
+    var emulator = new Emulator(_cpu, _display, _keyboard, soundMock.Object);
+    emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+    _cpu.ST = 10; // Set sound timer to trigger sound
+
+    emulator.RunContinueApplication();
+
+    await Task.Delay(100).ConfigureAwait(false);
+
+    emulator.PauseApplication();
+
+    await Task.Delay(50).ConfigureAwait(false);
+
+    // Verify that Stop() was called at least once when pausing with active sound
+    soundMock.Verify(x => x.Stop(), Times.AtLeastOnce);
+
+    emulator.Dispose();
   }
 
   #endregion
