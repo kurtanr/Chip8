@@ -203,6 +203,31 @@ public class EmulatorTests
     Assert.DoesNotThrow(() => _emulator.PauseApplication());
   }
 
+  [Test]
+  public async Task PauseApplication_WithPlayingSound_StopsSound()
+  {
+    var soundMock = new Mock<ISound>(MockBehavior.Strict);
+    soundMock.Setup(x => x.Play());
+    soundMock.Setup(x => x.Stop());
+
+    var emulator = new Emulator(_cpu, _display, _keyboard, soundMock.Object);
+    emulator.LoadApplication(_applicationWhichClearsScreenInLoop);
+    _cpu.ST = 10; // Set sound timer to trigger sound
+
+    emulator.RunContinueApplication();
+
+    await Task.Delay(100).ConfigureAwait(false);
+
+    emulator.PauseApplication();
+
+    await Task.Delay(50).ConfigureAwait(false);
+
+    // Verify that Stop() was called at least once when pausing with active sound
+    soundMock.Verify(x => x.Stop(), Times.AtLeastOnce);
+
+    emulator.Dispose();
+  }
+
   #endregion
 
   #region StopApplication
