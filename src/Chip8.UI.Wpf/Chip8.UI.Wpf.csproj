@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>images\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="images\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CHIP-8.xshd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chip8\Chip8.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\breakpoint_dark.png" />
+    <Resource Include="images\breakpoint_light.png" />
+    <Resource Include="images\build_dark.png" />
+    <Resource Include="images\build_light.png" />
+    <Resource Include="images\load_dark.png" />
+    <Resource Include="images\load_light.png" />
+    <Resource Include="images\new_dark.png" />
+    <Resource Include="images\new_light.png" />
+    <Resource Include="images\pause_dark.png" />
+    <Resource Include="images\pause_light.png" />
+    <Resource Include="images\run_dark.png" />
+    <Resource Include="images\run_light.png" />
+    <Resource Include="images\save_dark.png" />
+    <Resource Include="images\save_light.png" />
+    <Resource Include="images\step-into_dark.png" />
+    <Resource Include="images\step-into_light.png" />
+    <Resource Include="images\stop_dark.png" />
+    <Resource Include="images\stop_light.png" />
+  </ItemGroup>
+
+</Project>
