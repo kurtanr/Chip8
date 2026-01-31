@@ -10,6 +10,7 @@ namespace Chip8.UI.Wpf;
 public partial class MainWindow : Window
 {
   private readonly DispatcherTimer _timer;
+  private readonly Chip8NAudioSound _sound;
 
   public MainWindow()
   {
@@ -18,8 +19,8 @@ public partial class MainWindow : Window
     var cpu = new Cpu(true);
     var display = new BitmapDisplay(DisplayGrid);
     var keyboard = new Chip8Keyboard();
-    var sound = new Chip8NAudioSound();
-    var emulator = new Emulator(cpu, display, keyboard, sound);
+    _sound = new Chip8NAudioSound();
+    var emulator = new Emulator(cpu, display, keyboard, _sound);
 
     var mainViewModel = new MainViewModel(emulator,
       new DialogFileInteraction(), new DialogBuildInteraction());
@@ -36,5 +37,12 @@ public partial class MainWindow : Window
     // Subscribe to keyboard events
     KeyDown += (s, e) => keyboard.OnKeyDown(e);
     KeyUp += (s, e) => keyboard.OnKeyUp(e);
+  }
+
+  protected override void OnClosed(EventArgs e)
+  {
+    _timer.Stop();
+    _sound.Dispose();
+    base.OnClosed(e);
   }
 }
