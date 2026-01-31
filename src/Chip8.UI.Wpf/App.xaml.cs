@@ -11,7 +11,7 @@ namespace Chip8.UI.Wpf;
 /// </summary>
 public partial class App : Application
 {
-  App()
+  public App()
   {
     LoadAvalonEditHighlightingDefinition();
   }
