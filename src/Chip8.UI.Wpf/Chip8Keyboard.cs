@@ -51,7 +51,9 @@ internal class Chip8Keyboard : IKeyboard
     }
 
     if (!KeyMapping.TryGetValue(KeyInterop.VirtualKeyFromKey(e.Key), out byte key))
+    {
       return;
+    }
 
     _keyState[key] = true;
     e.Handled = true;
@@ -59,8 +61,15 @@ internal class Chip8Keyboard : IKeyboard
 
   public void OnKeyUp(KeyEventArgs e)
   {
-    if (!KeyMapping.TryGetValue(KeyInterop.VirtualKeyFromKey(e.Key), out byte key))
+    if (e.OriginalSource is TextArea)
+    {
       return;
+    }
+
+    if (!KeyMapping.TryGetValue(KeyInterop.VirtualKeyFromKey(e.Key), out byte key))
+    {
+      return;
+    }
 
     _keyState[key] = false;
     e.Handled = true;

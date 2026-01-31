@@ -12,8 +12,6 @@ public class InstructionViewModel : INotifyPropertyChanged
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
   }
 
-  private readonly CpuInstruction _cpuInstruction;
-
   public string AssemblyDisplay
   {
     get;
@@ -36,9 +34,7 @@ public class InstructionViewModel : INotifyPropertyChanged
 
   public InstructionViewModel(CpuInstruction cpuInstruction, ushort address)
   {
-    _cpuInstruction = cpuInstruction;
-
-    AssemblyDisplay = $"[0x{address:X3}] 0x{cpuInstruction.Decoded.InstructionCode:X4}  // {_cpuInstruction.Description}";
+    AssemblyDisplay = $"[0x{address:X3}] 0x{cpuInstruction.Decoded.InstructionCode:X4}  // {cpuInstruction.Description}";
     SourceCodeDisplay = cpuInstruction.Mnemonic;
   }
 

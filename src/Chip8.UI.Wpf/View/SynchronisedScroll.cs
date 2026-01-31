@@ -7,7 +7,7 @@ namespace Chip8.UI.Wpf.View;
 /// <summary>
 /// See: https://stackoverflow.com/a/57385064/15770755
 /// </summary>
-public class SynchronisedScroll
+public static class SynchronisedScroll
 {
   public static SynchronisedScrollToken GetToken(ScrollViewer obj)
   {
@@ -71,10 +71,14 @@ public class SynchronisedScrollToken
         continue;
 
       if (potentialScroll.VerticalOffset != sendingScroll.VerticalOffset)
+      {
         potentialScroll.ScrollToVerticalOffset(sendingScroll.VerticalOffset);
+      }
 
       if (potentialScroll.HorizontalOffset != sendingScroll.HorizontalOffset)
+      {
         potentialScroll.ScrollToHorizontalOffset(sendingScroll.HorizontalOffset);
+      }
     }
   }
 }

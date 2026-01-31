@@ -241,7 +241,7 @@ public partial class MainViewModel
       application.Add(cpuInstruction.Decoded.kk);
     }
 
-    if (application[application.Count - 1] == 0x0)
+    if (application.Count > 0 && application[application.Count - 1] == 0x0)
     {
       application.RemoveAt(application.Count - 1);
     }
