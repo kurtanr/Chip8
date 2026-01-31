@@ -41,7 +41,13 @@ public class SynchronisedScrollToken
 
   internal void unregister(ScrollViewer scroll)
   {
-    throw new NotImplementedException();
+    if (scroll == null)
+    {
+      return;
+    }
+
+    scroll.ScrollChanged -= ScrollChanged;
+    registeredScrolls.Remove(scroll);
   }
 
   internal void register(ScrollViewer scroll)
