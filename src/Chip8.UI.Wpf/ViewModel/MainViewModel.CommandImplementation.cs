@@ -270,14 +270,7 @@ public partial class MainViewModel
     _instructions.Clear();
 
     InstructionInMemory = string.Empty;
-    if (_codeFilePath != null)
-    {
-      InstructionInCode = File.ReadAllText(_codeFilePath);
-    }
-    else
-    {
-      InstructionInCode = string.Empty;
-    }
+    InstructionInCode = _codeFilePath != null ? File.ReadAllText(_codeFilePath) : string.Empty;
 
     _isBinaryModified = false;
     _isCodeModified = false;

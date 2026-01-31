@@ -28,15 +28,15 @@ public partial class MainWindow : Window
 
     _timer = new DispatcherTimer();
     _timer.Interval = TimeSpan.FromSeconds(1);
-    _timer.Tick += (s, e) =>
+    _timer.Tick += (_, _) =>
     {
       mainViewModel.FpsIpsStats = $"IPS: {emulator.GetInstructionsPerSecond()}, FPS: {emulator.GetFramesPerSecond()}";
     };
     _timer.Start();
 
     // Subscribe to keyboard events
-    KeyDown += (s, e) => keyboard.OnKeyDown(e);
-    KeyUp += (s, e) => keyboard.OnKeyUp(e);
+    KeyDown += (_, e) => keyboard.OnKeyDown(e);
+    KeyUp += (_, e) => keyboard.OnKeyUp(e);
   }
 
   protected override void OnClosed(EventArgs e)
