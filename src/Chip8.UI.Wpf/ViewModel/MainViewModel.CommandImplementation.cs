@@ -253,7 +253,7 @@ public partial class MainViewModel
 
   private void ToggleBreakpoint()
   {
-    // TODO
+    // not implemented
     RefreshUI();
   }
 

@@ -68,7 +68,9 @@ public class SynchronisedScrollToken
     foreach (var potentialScroll in _registeredScrolls)
     {
       if (potentialScroll == sendingScroll)
+      {
         continue;
+      }
 
       if (potentialScroll.VerticalOffset != sendingScroll.VerticalOffset)
       {
