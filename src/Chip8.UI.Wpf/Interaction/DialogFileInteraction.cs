@@ -17,8 +17,8 @@ internal class DialogFileInteraction : IFileInteraction
   public bool ConfirmGetBinaryPathForOpening()
   {
     var result = MessageBox.Show(
-      "Opening a new binary file will discard current binary and source code changes.",
-      "Do you want to continue?",
+      "Opening a new binary file will discard current binary and source code changes. Do you want to continue?",
+      "Confirm Open",
       MessageBoxButtons.YesNo,
       MessageBoxIcon.Warning);
     return result == DialogResult.Yes;
@@ -33,8 +33,8 @@ internal class DialogFileInteraction : IFileInteraction
   public bool ConfirmGetCodePathForOpening()
   {
     var result = MessageBox.Show(
-      "Opening a new source code file will discard current binary and source code changes.",
-      "Do you want to continue?",
+      "Opening a new source code file will discard current binary and source code changes. Do you want to continue?",
+      "Confirm Open",
       MessageBoxButtons.YesNo,
       MessageBoxIcon.Warning);
     return result == DialogResult.Yes;
