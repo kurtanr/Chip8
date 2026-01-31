@@ -11,6 +11,7 @@ public partial class MainWindow : Window
 {
   private readonly DispatcherTimer _timer;
   private readonly Chip8NAudioSound _sound;
+  private readonly Emulator _emulator;
 
   public MainWindow()
   {
@@ -20,9 +21,9 @@ public partial class MainWindow : Window
     var display = new BitmapDisplay(DisplayGrid);
     var keyboard = new Chip8Keyboard();
     _sound = new Chip8NAudioSound();
-    var emulator = new Emulator(cpu, display, keyboard, _sound);
+    _emulator = new Emulator(cpu, display, keyboard, _sound);
 
-    var mainViewModel = new MainViewModel(emulator,
+    var mainViewModel = new MainViewModel(_emulator,
       new DialogFileInteraction(), new DialogBuildInteraction());
     DataContext = mainViewModel;
 
@@ -30,7 +31,7 @@ public partial class MainWindow : Window
     _timer.Interval = TimeSpan.FromSeconds(1);
     _timer.Tick += (_, _) =>
     {
-      mainViewModel.FpsIpsStats = $"IPS: {emulator.GetInstructionsPerSecond()}, FPS: {emulator.GetFramesPerSecond()}";
+      mainViewModel.FpsIpsStats = $"IPS: {_emulator.GetInstructionsPerSecond()}, FPS: {_emulator.GetFramesPerSecond()}";
     };
     _timer.Start();
 
@@ -43,6 +44,7 @@ public partial class MainWindow : Window
   {
     _timer.Stop();
     _sound.Dispose();
+    _emulator.Dispose();
     base.OnClosed(e);
   }
 }

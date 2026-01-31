@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows;
 
@@ -14,10 +13,12 @@ public class SynchronisedScroll
   {
     return (SynchronisedScrollToken)obj.GetValue(TokenProperty);
   }
+
   public static void SetToken(ScrollViewer obj, SynchronisedScrollToken value)
   {
     obj.SetValue(TokenProperty, value);
   }
+
   public static readonly DependencyProperty TokenProperty =
       DependencyProperty.RegisterAttached("Token", typeof(SynchronisedScrollToken), typeof(SynchronisedScroll), new PropertyMetadata(TokenChanged));
 
@@ -29,17 +30,17 @@ public class SynchronisedScroll
 
     if (scroll != null)
     {
-      oldToken?.unregister(scroll);
-      newToken?.register(scroll);
+      oldToken?.Unregister(scroll);
+      newToken?.Register(scroll);
     }
   }
 }
 
 public class SynchronisedScrollToken
 {
-  List<ScrollViewer> registeredScrolls = new List<ScrollViewer>();
+  private readonly List<ScrollViewer> _registeredScrolls = new List<ScrollViewer>();
 
-  internal void unregister(ScrollViewer scroll)
+  internal void Unregister(ScrollViewer scroll)
   {
     if (scroll == null)
     {
@@ -47,13 +48,13 @@ public class SynchronisedScrollToken
     }
 
     scroll.ScrollChanged -= ScrollChanged;
-    registeredScrolls.Remove(scroll);
+    _registeredScrolls.Remove(scroll);
   }
 
-  internal void register(ScrollViewer scroll)
+  internal void Register(ScrollViewer scroll)
   {
     scroll.ScrollChanged += ScrollChanged;
-    registeredScrolls.Add(scroll);
+    _registeredScrolls.Add(scroll);
   }
 
   private void ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -64,7 +65,7 @@ public class SynchronisedScrollToken
       return;
     }
 
-    foreach (var potentialScroll in registeredScrolls)
+    foreach (var potentialScroll in _registeredScrolls)
     {
       if (potentialScroll == sendingScroll)
         continue;
