@@ -1,0 +1,73 @@
+<SyntaxDefinition name="ILAsm" extensions=".il" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+
+  <Color name="Instructions" foreground="Purple" exampleText="CLS" />
+  <Color name="Registers" foreground="Yellow" exampleText="V0" />
+  <Color name="Comment" foreground="Green" exampleText="// comment" />
+  <Color name="Keywords" foreground="Blue" fontWeight="bold" exampleText="true" />
+  <Color name="Directives" foreground="Green" fontWeight="bold" exampleText=".class" />
+  <Color name="Security" foreground="Red" exampleText="request" />
+
+  <RuleSet ignoreCase="true">
+    <Keywords color="Instructions" fontWeight="bold">
+      <Word>CLS</Word>
+      <Word>RET</Word>
+      <Word>SYS</Word>
+      <Word>JP</Word>
+      <Word>CALL</Word>
+      <Word>SE</Word>
+      <Word>SNE</Word>
+      <Word>LD</Word>
+      <Word>ADD</Word>
+      <Word>OR</Word>
+      <Word>AND</Word>
+      <Word>XOR</Word>
+      <Word>SUB</Word>
+      <Word>SHR</Word>
+      <Word>SUBN</Word>
+      <Word>SHL</Word>
+      <Word>RND</Word>
+      <Word>DRW</Word>
+      <Word>SKP</Word>
+      <Word>SKNP</Word>
+    </Keywords>
+
+    <Keywords color="Registers" fontWeight="bold">
+      <Word>PC</Word>
+      <Word>I</Word>
+      <Word>DT</Word>
+      <Word>ST</Word>
+      <Word>V0</Word>
+      <Word>V1</Word>
+      <Word>V2</Word>
+      <Word>V3</Word>
+      <Word>V4</Word>
+      <Word>V5</Word>
+      <Word>V6</Word>
+      <Word>V7</Word>
+      <Word>V8</Word>
+      <Word>V9</Word>
+      <Word>VA</Word>
+      <Word>VB</Word>
+      <Word>VC</Word>
+      <Word>VD</Word>
+      <Word>VE</Word>
+      <Word>VF</Word>
+    </Keywords>
+
+    <Span color="Comment" ruleSet="CommentMarkerSet">
+      <Begin>//</Begin>
+    </Span>
+
+    <Span color="Comment" ruleSet="CommentMarkerSet">
+      <Begin>\#</Begin>
+    </Span>
+
+  </RuleSet>
+
+  <RuleSet name="CommentMarkerSet" ignoreCase="false">
+    <Keywords foreground="#FF7FFF00" fontWeight="bold">
+      <Word>TODO</Word>
+    </Keywords>
+  </RuleSet>
+
+</SyntaxDefinition>
