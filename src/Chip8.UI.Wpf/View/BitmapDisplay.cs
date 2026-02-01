@@ -1,4 +1,4 @@
-﻿using Chip8;
+using Chip8.UI.Wpf.Helpers;
 using System;
 using System.Threading;
 using System.Windows;
@@ -15,8 +15,9 @@ public sealed class BitmapDisplay : IDisplay
   private const int ScreenHeight = 32;
   private const int PixelSize = 10;
 
-  private const UInt32 LightPixelColor = 0xFFF0F8FF;
-  private const UInt32 DarkPixelColor = 0xFFA9A9A9;
+  // Colors for CHIP-8 display pixels (on/off state), updated based on Windows theme
+  private UInt32 LightPixelColor;
+  private UInt32 DarkPixelColor;
 
   // For usage see: https://learn.microsoft.com/en-us/dotnet/api/system.windows.media.imaging.writeablebitmap
   private readonly WriteableBitmap _bitmap;
@@ -54,10 +55,26 @@ public sealed class BitmapDisplay : IDisplay
     image.Source = _bitmap;
     grid.Children.Add(image);
 
+    UpdateThemeColors(ThemeHelper.IsDarkMode);
     Clear();
 
     _dirty = true;
     RenderIfDirty();
+  }
+
+  public void UpdateThemeColors(bool isDarkMode)
+  {
+    if (isDarkMode)
+    {
+      LightPixelColor = 0xFFD0D0D0;
+      DarkPixelColor = 0xFF565656;
+    }
+    else
+    {
+      LightPixelColor = 0xFF565656;
+      DarkPixelColor = 0xFFD0D0D0;
+    }
+    _dirty = true;
   }
 
   #region IDisplay implementation (logical operations only)

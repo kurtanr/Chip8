@@ -1,4 +1,4 @@
-﻿using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Editing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;

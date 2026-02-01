@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Chip8.UI.Wpf.View;
 
@@ -9,6 +10,36 @@ namespace Chip8.UI.Wpf.View;
 /// </summary>
 public class BindableAvalonEditor : ICSharpCode.AvalonEdit.TextEditor, INotifyPropertyChanged
 {
+  static BindableAvalonEditor()
+  {
+    // Override metadata to intercept Background/Foreground changes and propagate to AvalonEdit's TextArea
+    BackgroundProperty.OverrideMetadata(
+      typeof(BindableAvalonEditor),
+      new FrameworkPropertyMetadata(OnBackgroundChanged));
+
+    ForegroundProperty.OverrideMetadata(
+      typeof(BindableAvalonEditor),
+      new FrameworkPropertyMetadata(OnForegroundChanged));
+  }
+
+  private static void OnBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+  {
+    var editor = (BindableAvalonEditor)d;
+    if (editor.TextArea != null)
+    {
+      editor.TextArea.Background = (Brush)e.NewValue;
+    }
+  }
+
+  private static void OnForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+  {
+    var editor = (BindableAvalonEditor)d;
+    if (editor.TextArea != null)
+    {
+      editor.TextArea.Foreground = (Brush)e.NewValue;
+    }
+  }
+
   /// <summary>
   /// A bindable Text property
   /// </summary>

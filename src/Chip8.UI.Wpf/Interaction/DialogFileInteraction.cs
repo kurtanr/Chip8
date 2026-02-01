@@ -1,4 +1,4 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace Chip8.UI.Wpf.Interaction;
