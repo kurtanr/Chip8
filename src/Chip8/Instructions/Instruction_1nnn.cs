@@ -1,4 +1,4 @@
-﻿namespace Chip8.Instructions;
+namespace Chip8.Instructions;
 
 /// <summary>
 /// Jump to location nnn.

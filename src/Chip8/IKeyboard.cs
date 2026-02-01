@@ -1,4 +1,4 @@
-﻿namespace Chip8;
+namespace Chip8;
 
 /// <summary>
 /// Abstraction of Chip-8 keyboard.
