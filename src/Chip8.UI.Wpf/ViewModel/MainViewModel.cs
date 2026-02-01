@@ -194,4 +194,9 @@ public partial class MainViewModel : INotifyPropertyChanged
 
     RefreshUI();
   }
+
+  public void NotifyThemeChanged()
+  {
+    OnPropertyChanged(nameof(IsDarkMode));
+  }
 }

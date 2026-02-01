@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using Chip8.UI.Wpf.Interaction;
 using Chip8.UI.Wpf.View;
 using Chip8.UI.Wpf.ViewModel;
@@ -12,6 +13,7 @@ public partial class MainWindow : Window
   private readonly DispatcherTimer _timer;
   private readonly Chip8NAudioSound _sound;
   private readonly Emulator _emulator;
+  private readonly MainViewModel _mainViewModel;
 
   public MainWindow()
   {
@@ -23,21 +25,32 @@ public partial class MainWindow : Window
     _sound = new Chip8NAudioSound();
     _emulator = new Emulator(cpu, display, keyboard, _sound);
 
-    var mainViewModel = new MainViewModel(_emulator,
+    _mainViewModel = new MainViewModel(_emulator,
       new DialogFileInteraction(), new DialogBuildInteraction());
-    DataContext = mainViewModel;
+    DataContext = _mainViewModel;
 
     _timer = new DispatcherTimer();
     _timer.Interval = TimeSpan.FromSeconds(1);
     _timer.Tick += (_, _) =>
     {
-      mainViewModel.FpsIpsStats = $"IPS: {_emulator.GetInstructionsPerSecond()}, FPS: {_emulator.GetFramesPerSecond()}";
+      _mainViewModel.FpsIpsStats = $"IPS: {_emulator.GetInstructionsPerSecond()}, FPS: {_emulator.GetFramesPerSecond()}";
     };
     _timer.Start();
 
     // Subscribe to keyboard events
     KeyDown += (_, e) => keyboard.OnKeyDown(e);
     KeyUp += (_, e) => keyboard.OnKeyUp(e);
+
+    // Subscribe to system theme changes
+    SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+  }
+
+  private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+  {
+    if (e.Category == UserPreferenceCategory.General)
+    {
+      _mainViewModel.NotifyThemeChanged();
+    }
   }
 
   protected override void OnClosed(EventArgs e)
@@ -45,6 +58,9 @@ public partial class MainWindow : Window
     _timer.Stop();
     _sound.Dispose();
     _emulator.Dispose();
+
+    SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
+
     base.OnClosed(e);
   }
 }
