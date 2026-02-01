@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Win32;
@@ -14,16 +14,17 @@ public partial class MainWindow : Window
   private readonly Chip8NAudioSound _sound;
   private readonly Emulator _emulator;
   private readonly MainViewModel _mainViewModel;
+  private readonly BitmapDisplay _display;
 
   public MainWindow()
   {
     InitializeComponent();
 
     var cpu = new Cpu(true);
-    var display = new BitmapDisplay(DisplayGrid);
+    _display = new BitmapDisplay(DisplayGrid);
     var keyboard = new Chip8Keyboard();
     _sound = new Chip8NAudioSound();
-    _emulator = new Emulator(cpu, display, keyboard, _sound);
+    _emulator = new Emulator(cpu, _display, keyboard, _sound);
 
     _mainViewModel = new MainViewModel(_emulator,
       new DialogFileInteraction(), new DialogBuildInteraction());
@@ -50,6 +51,7 @@ public partial class MainWindow : Window
     if (e.Category == UserPreferenceCategory.General)
     {
       _mainViewModel.NotifyThemeChanged();
+      _display.UpdateThemeColors(_mainViewModel.IsDarkMode);
     }
   }
 

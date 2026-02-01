@@ -1,4 +1,4 @@
-﻿namespace Chip8.UI.Wpf.Interaction;
+namespace Chip8.UI.Wpf.Interaction;
 
 public interface IFileInteraction
 {

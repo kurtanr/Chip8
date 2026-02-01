@@ -1,4 +1,4 @@
-﻿using Chip8.Instructions;
+using Chip8.Instructions;
 using System.ComponentModel;
 
 namespace Chip8.UI.Wpf.ViewModel;
