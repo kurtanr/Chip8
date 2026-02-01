@@ -1,0 +1,23 @@
+# Normalize all text files to LF in repository, auto-convert to native line endings on checkout
+* text=auto
+
+# Explicitly declare text files (they'll use native line endings per platform)
+*.cs text
+*.xaml text
+*.json text
+*.md text
+*.config text
+*.props text
+*.targets text
+*.csproj text
+*.slnx text
+
+# Declare files that are always binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.dll binary
+*.exe binary
+*.pdb binary

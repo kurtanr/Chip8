@@ -1,4 +1,4 @@
-﻿namespace Chip8.Instructions;
+namespace Chip8.Instructions;
 
 /// <summary>
 /// Skip next instruction if Vx = kk.

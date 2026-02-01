@@ -1,4 +1,4 @@
-﻿using Chip8.Instructions;
+using Chip8.Instructions;
 using System;
 using System.Globalization;
 using System.Linq;

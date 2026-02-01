@@ -1,4 +1,4 @@
-﻿namespace Chip8.Instructions;
+namespace Chip8.Instructions;
 
 /// <summary>
 /// Base Chip-8 CPU instruction.

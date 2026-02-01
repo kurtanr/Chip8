@@ -1,4 +1,4 @@
-﻿using Chip8.Instructions;
+using Chip8.Instructions;
 using NUnit.Framework;
 
 namespace Chip8.Tests;

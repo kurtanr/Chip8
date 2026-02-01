@@ -1,9 +1,8 @@
-using Chip8.UI.Wpf.Helpers;
 using Chip8.UI.Wpf.Interaction;
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
-using System.Windows.Media;
+using Microsoft.Win32;
 
 namespace Chip8.UI.Wpf.ViewModel;
 
@@ -132,41 +131,24 @@ public partial class MainViewModel : INotifyPropertyChanged
     }
   }
 
-  public bool IsDarkMode => ThemeHelper.IsDarkMode;
-
-  private static readonly Brush DarkEditorBackground;
-  private static readonly Brush LightEditorBackground;
-  private static readonly Brush DarkEditorForeground;
-  private static readonly Brush LightEditorForeground;
-  private static readonly Brush DarkDisplayBackground;
-  private static readonly Brush LightDisplayBackground;
-
-  static MainViewModel()
+  public bool IsDarkMode
   {
-    DarkEditorBackground = new SolidColorBrush(Color.FromRgb(30, 30, 30));
-    DarkEditorBackground.Freeze();
-    
-    LightEditorBackground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-    LightEditorBackground.Freeze();
-    
-    DarkEditorForeground = new SolidColorBrush(Color.FromRgb(220, 220, 220));
-    DarkEditorForeground.Freeze();
-    
-    LightEditorForeground = new SolidColorBrush(Color.FromRgb(30, 30, 30));
-    LightEditorForeground.Freeze();
-    
-    DarkDisplayBackground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-    DarkDisplayBackground.Freeze();
-    
-    LightDisplayBackground = new SolidColorBrush(Color.FromRgb(245, 245, 245));
-    LightDisplayBackground.Freeze();
+    get
+    {
+#if WINDOWS
+      object? systemUsesLightTheme = Registry.GetValue(
+        @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+        "SystemUsesLightTheme",
+        0);
+
+      // Safely unbox, default to 0 (dark mode) if null
+      return Convert.ToInt32(systemUsesLightTheme ?? 0) == 0;
+#else
+      // Default to dark mode on non-Windows platforms
+      return true;
+#endif
+    }
   }
-
-  public Brush EditorBackground => IsDarkMode ? DarkEditorBackground : LightEditorBackground;
-
-  public Brush EditorForeground => IsDarkMode ? DarkEditorForeground : LightEditorForeground;
-
-  public Brush DisplayBackground => IsDarkMode ? DarkDisplayBackground : LightDisplayBackground;
 
   public MainViewModel(Emulator emulator, IFileInteraction fileInteraction, IBuildInteraction buildInteraction)
   {
@@ -216,8 +198,5 @@ public partial class MainViewModel : INotifyPropertyChanged
   public void NotifyThemeChanged()
   {
     OnPropertyChanged(nameof(IsDarkMode));
-    OnPropertyChanged(nameof(EditorBackground));
-    OnPropertyChanged(nameof(EditorForeground));
-    OnPropertyChanged(nameof(DisplayBackground));
   }
 }

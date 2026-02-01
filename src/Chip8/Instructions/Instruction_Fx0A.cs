@@ -1,4 +1,4 @@
-﻿namespace Chip8.Instructions;
+namespace Chip8.Instructions;
 
 /// <summary>
 /// Wait for a key press, store the value of the key in Vx.

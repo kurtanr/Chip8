@@ -1,4 +1,4 @@
-﻿using Chip8.Instructions;
+using Chip8.Instructions;
 using Moq;
 using NUnit.Framework;
 
