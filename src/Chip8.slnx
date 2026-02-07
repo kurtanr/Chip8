@@ -4,6 +4,7 @@
     <File Path="Directory.Build.props" />
   </Folder>
   <Project Path="Chip8.Tests/Chip8.Tests.csproj" />
+  <Project Path="Chip8.UI.Cli/Chip8.UI.Cli.csproj" Id="655d550a-b84d-4b71-be10-441f946d7d15" />
   <Project Path="Chip8.UI.Wpf/Chip8.UI.Wpf.csproj" />
   <Project Path="Chip8/Chip8.csproj" />
 </Solution>

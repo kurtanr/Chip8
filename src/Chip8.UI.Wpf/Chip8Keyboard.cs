@@ -6,10 +6,10 @@ using System.Windows.Input;
 namespace Chip8.UI.Wpf;
 
 /// <summary>
-/// CHIP-8     Physical position (QWERTY layout)
-/// 1 2 3 C    Top row:    1 2 3 4
-/// 4 5 6 D    Home row:   Q W E R
-/// 7 8 9 E    Home row:   A S D F
+/// CHIP-8     Physical position (QWERTY layout)<br/>
+/// 1 2 3 C    Top row:    1 2 3 4<br/>
+/// 4 5 6 D    Home row:   Q W E R<br/>
+/// 7 8 9 E    Home row:   A S D F<br/>
 /// A 0 B F    Bottom row: Z X C V
 /// </summary>
 internal class Chip8Keyboard : IKeyboard

@@ -1,18 +1,17 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using System;
 
-namespace Chip8.UI.Wpf;
+namespace Chip8.UI.Cli;
 
 /// <summary>
-/// WPF implementation of Chip-8 sound using NAudio.
+/// Console implementation of <see cref="ISound"/> using NAudio.
 /// </summary>
-internal sealed class Chip8NAudioSound : ISound, IDisposable
+internal sealed class ConsoleSound : ISound, IDisposable
 {
   private readonly IWavePlayer _wavePlayer;
   private bool _isDisposed;
 
-  public Chip8NAudioSound()
+  public ConsoleSound()
   {
     _wavePlayer = new WaveOutEvent();
     var signalGenerator = new SignalGenerator(44100, 1)
