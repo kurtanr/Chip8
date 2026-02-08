@@ -1,10 +1,37 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chip8\Chip8.csproj" />
+  </ItemGroup>
+
+  <!-- Copy ROM files from repo games folder to wwwroot/games and generate manifest -->
+  <ItemGroup>
+    <_GameFile Include="..\..\games\*" Exclude="..\..\games\*.c8" />
+  </ItemGroup>
+
+  <Target Name="CopyGamesToWwwroot" BeforeTargets="PrepareForBuild">
+    <MakeDir Directories="wwwroot\games" />
+    <Copy SourceFiles="@(_GameFile)" DestinationFolder="wwwroot\games" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="GenerateGameManifest" AfterTargets="CopyGamesToWwwroot">
+    <ItemGroup>
+      <_GameFileName Include="@(_GameFile->'&quot;%(Filename)%(Extension)&quot;')" />
+    </ItemGroup>
+    <PropertyGroup>
+      <_GameList>@(_GameFileName, ',')</_GameList>
+    </PropertyGroup>
+    <WriteLinesToFile File="wwwroot\games\games.json" Lines="[$(_GameList)]" Overwrite="true" />
+  </Target>
 
 </Project>

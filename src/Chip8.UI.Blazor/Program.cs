@@ -1,21 +1,14 @@
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Chip8.UI.Blazor.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Add services to the container.
-builder.Services.AddRazorComponents();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+builder.Services.AddScoped(_ => new HttpClient
 {
-  app.UseExceptionHandler("/Error", createScopeForErrors: true);
-}
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseAntiforgery();
+  BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+});
 
-app.MapStaticAssets();
-app.MapRazorComponents<App>();
-
-app.Run();
+await builder.Build().RunAsync();

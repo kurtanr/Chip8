@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Chip8.UI.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "../../../../../games/TETRIS"
+    }
+  }
+}

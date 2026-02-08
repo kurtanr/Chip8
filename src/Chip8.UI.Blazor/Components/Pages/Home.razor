@@ -1,7 +1,233 @@
-﻿@page "/"
+@page "/"
+@implements IAsyncDisposable
+@inject HttpClient Http
+@inject IJSRuntime JS
 
-<PageTitle>Home</PageTitle>
+<PageTitle>CHIP-8 Emulator</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="emulator-container">
+  <div class="toolbar">
+    <select @bind="_selectedRom" disabled="@_isRunning">
+      <option value="">-- Select ROM --</option>
+      @foreach (var rom in _romList)
+      {
+        <option value="@rom">@rom</option>
+      }
+    </select>
+    <button @onclick="LoadRom" disabled="@(string.IsNullOrEmpty(_selectedRom) || _isRunning)">
+      &#x1F4C2; Load
+    </button>
+    <button @onclick="Play" disabled="@(_isRunning || !_isLoaded)">&#x25B6; Play</button>
+    <button @onclick="Pause" disabled="@(!_isRunning)">&#x23F8; Pause</button>
+    <button @onclick="Stop" disabled="@(!_isLoaded)">&#x23F9; Stop</button>
+  </div>
+  <canvas id="chip8-canvas" width="64" height="32"></canvas>
+</div>
 
-Welcome to your new app.
+@code {
+  private IJSInProcessObjectReference? _jsModule;
+  private DotNetObjectReference<Home>? _dotNetRef;
+
+  private Cpu? _cpu;
+  private BlazorDisplay? _display;
+  private BlazorKeyboard? _keyboard;
+  private InstructionExecutor? _executor;
+
+  private string[] _romList = [];
+  private string _selectedRom = "";
+  private bool _isLoaded;
+  private bool _isRunning;
+  private bool _isSoundPlaying;
+
+  // 500 Hz CPU / 60 Hz frame rate ≈ 8 instructions per frame
+  private const int InstructionsPerFrame = 500 / 60;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender)
+    {
+      return;
+    }
+
+    var module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/chip8-interop.js");
+    _jsModule = (IJSInProcessObjectReference)module;
+    _dotNetRef = DotNetObjectReference.Create(this);
+    _jsModule.InvokeVoid("initialize", "chip8-canvas", _dotNetRef);
+
+    try
+    {
+      _romList = await Http.GetFromJsonAsync<string[]>("games/games.json") ?? [];
+      StateHasChanged();
+    }
+    catch
+    {
+      // games.json not found or empty — dropdown stays empty
+    }
+  }
+
+  private async Task LoadRom()
+  {
+    if (string.IsNullOrEmpty(_selectedRom))
+    {
+      return;
+    }
+
+    StopEmulator();
+
+    var romData = await Http.GetByteArrayAsync($"games/{_selectedRom}");
+
+    _cpu = new Cpu(true);
+    _display = new BlazorDisplay();
+    _keyboard = new BlazorKeyboard();
+    _executor = new InstructionExecutor(_cpu, _display, _keyboard);
+
+    romData.CopyTo(_cpu.Memory, Cpu.MemoryAddressOfFirstInstruction);
+    _isLoaded = true;
+
+    _jsModule?.InvokeVoid("clearCanvas");
+  }
+
+  private void Play()
+  {
+    if (!_isLoaded || _isRunning)
+    {
+      return;
+    }
+
+    _isRunning = true;
+    _jsModule?.InvokeVoid("initAudio");
+    _jsModule?.InvokeVoid("startGameLoop");
+  }
+
+  private void Pause()
+  {
+    if (!_isRunning)
+    {
+      return;
+    }
+
+    _isRunning = false;
+    _jsModule?.InvokeVoid("stopGameLoop");
+
+    if (_isSoundPlaying)
+    {
+      _jsModule?.InvokeVoid("stopSound");
+      _isSoundPlaying = false;
+    }
+  }
+
+  private void Stop()
+  {
+    StopEmulator();
+    StateHasChanged();
+  }
+
+  private void StopEmulator()
+  {
+    _isRunning = false;
+    _isLoaded = false;
+    _jsModule?.InvokeVoid("stopGameLoop");
+
+    if (_isSoundPlaying)
+    {
+      _jsModule?.InvokeVoid("stopSound");
+      _isSoundPlaying = false;
+    }
+
+    _jsModule?.InvokeVoid("clearCanvas");
+    _cpu = null;
+    _display = null;
+    _keyboard = null;
+    _executor = null;
+  }
+
+  /// <summary>
+  /// Since Blazor WASM is single-threaded, the existing Emulator class
+  /// (which uses Thread.Sleep and background tasks) cannot be used.
+  /// Instead, the game loop is driven by JavaScript's requestAnimationFrame,
+  /// which calls into C# at ~60 Hz. Each frame:
+  /// 
+  /// 1. Keyboard: One synchronous JS→C# call reads a 16-bit bitmask of all key states
+  /// 2. CPU: Executes ~8 instructions (500Hz ÷ 60Hz) via InstructionExecutor directly
+  /// 3. Timers: DT and ST decremented once per frame (60 Hz)
+  /// 4. Sound: Web Audio API oscillator with gain toggling (avoids start/stop latency)
+  /// 5. Display: If dirty, a 2048-byte pixel array is passed to JS, which renders it on a 64×32 <canvas>
+  ///    CSS image-rendering: pixelated scales it to 640×320
+  /// </summary>
+  [JSInvokable]
+  public void OnFrame()
+  {
+    if (!_isRunning || _cpu == null || _executor == null || _display == null || _keyboard == null)
+    {
+      return;
+    }
+
+    // 1. Read keyboard state (single synchronous interop call per frame)
+    int keyMask = _jsModule!.Invoke<int>("getKeyStateMask");
+    _keyboard.UpdateKeyState(keyMask);
+
+    // 2. Execute CPU instructions
+    for (int i = 0; i < InstructionsPerFrame; i++)
+    {
+      try
+      {
+        _executor.ExecuteSingleInstruction();
+      }
+      catch
+      {
+        _isRunning = false;
+        _jsModule.InvokeVoid("stopGameLoop");
+        return;
+      }
+    }
+
+    // 3. Decrement timers (60 Hz, one tick per frame)
+    if (_cpu.DT > 0)
+    {
+      _cpu.DT--;
+    }
+
+    if (_cpu.ST > 0)
+    {
+      _cpu.ST--;
+    }
+
+    // 4. Update sound
+    if (_cpu.ST > 0)
+    {
+      if (!_isSoundPlaying)
+      {
+        _jsModule.InvokeVoid("playSound");
+        _isSoundPlaying = true;
+      }
+    }
+    else
+    {
+      if (_isSoundPlaying)
+      {
+        _jsModule.InvokeVoid("stopSound");
+        _isSoundPlaying = false;
+      }
+    }
+
+    // 5. Render display if dirty
+    var pixelData = _display.GetPixelData();
+    if (pixelData != null)
+    {
+      _jsModule.InvokeVoid("renderFrame", pixelData);
+    }
+  }
+
+  public async ValueTask DisposeAsync()
+  {
+    _isRunning = false;
+
+    if (_jsModule != null)
+    {
+      _jsModule.InvokeVoid("dispose");
+      await _jsModule.DisposeAsync();
+    }
+
+    _dotNetRef?.Dispose();
+  }
+}
