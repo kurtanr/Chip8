@@ -1,0 +1,154 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  SOLUTION: src/Chip8.slnx
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Build, test and publish artifacts
+  # ────────────────────────────────────────────────────────────────────────────
+  build:
+    runs-on: windows-latest   # Required for WPF publish (net10.0-windows)
+
+    outputs:
+      version: ${{ steps.read-version.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Read version from Directory.Build.props
+      id: read-version
+      shell: pwsh
+      run: |
+        [xml]$props = Get-Content "src/Directory.Build.props"
+        $version = $props.Project.PropertyGroup.Version
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore
+      run: dotnet restore ${{ env.SOLUTION }}
+
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION }} -c Release --no-restore
+
+    - name: Test
+      run: dotnet test ${{ env.SOLUTION }} -c Release --no-build --verbosity normal
+
+    # ── WPF ──────────────────────────────────────────────────────────────────
+    - name: Publish WPF
+      run: >
+        dotnet publish src/Chip8.UI.Wpf/Chip8.UI.Wpf.csproj
+        -c Release
+        -r win-x64
+        --self-contained false
+        -o publish/wpf
+
+    - name: Zip WPF
+      run: Compress-Archive -Path publish/wpf/* -DestinationPath "publish/Chip8.UI.Wpf-${{ steps.read-version.outputs.version }}-win-x64.zip"
+
+    # ── CLI ──────────────────────────────────────────────────────────────────
+    - name: Publish CLI
+      run: >
+        dotnet publish src/Chip8.UI.Cli/Chip8.UI.Cli.csproj
+        -c Release
+        -r win-x64
+        --self-contained false
+        -o publish/cli
+
+    - name: Zip CLI
+      run: Compress-Archive -Path publish/cli/* -DestinationPath "publish/Chip8.UI.Cli-${{ steps.read-version.outputs.version }}-win-x64.zip"
+
+    # ── Blazor WASM ─────────────────────────────────────────────────────────
+    - name: Publish Blazor
+      run: >
+        dotnet publish src/Chip8.UI.Blazor/Chip8.UI.Blazor.csproj
+        -c Release
+        -o publish/blazor
+
+    - name: Rewrite base href for GitHub Pages
+      run: |
+        $file = "publish/blazor/wwwroot/index.html"
+        (Get-Content $file) -replace '<base href="/" />', '<base href="/Chip8/" />' | Set-Content $file
+
+    # GitHub Pages ignores files and folders that start with an underscore, and Jekyll
+    # (https://jekyllrb.com/) is the default static site generator used by GitHub Pages.
+
+    # By adding a .nojekyll file to the root of the published Blazor site, we can prevent
+    # GitHub Pages from processing the site with Jekyll and ensure that all files are served correctly.
+
+    # This is required because Blazor WASM publishes its runtime and framework files under _framework/ directory.
+    # Without this the Blazor app would load index.html fine but then fail to load blazor.webassembly.js and the
+    # .NET WASM runtime - resulting in the app being stuck on the loading screen.
+    - name: Add .nojekyll
+      run: New-Item -Path "publish/blazor/wwwroot/.nojekyll" -ItemType File -Force
+
+    # ── Upload artifacts for downstream jobs ─────────────────────────────────
+    - name: Upload release zips
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-zips
+        path: publish/*.zip
+        retention-days: 1
+
+    - name: Upload Blazor site
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: publish/blazor/wwwroot
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Deploy Blazor to GitHub Pages
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Create GitHub Release with tag and zip artifacts
+  # ────────────────────────────────────────────────────────────────────────────
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download release zips
+      uses: actions/download-artifact@v4
+      with:
+        name: release-zips
+        path: artifacts
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ needs.build.outputs.version }}
+        name: v${{ needs.build.outputs.version }}
+        generate_release_notes: true
+        files: artifacts/*.zip
