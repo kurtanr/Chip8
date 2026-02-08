@@ -1,15 +1,46 @@
 # CHIP-8
 
-[![Build](https://github.com/kurtanr/Chip8/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/kurtanr/Chip8/actions/workflows/dotnet.yml)
+[![Build](https://github.com/kurtanr/Chip8/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/kurtanr/Chip8/actions/workflows/ci.yml)
 [![Codecov](https://img.shields.io/codecov/c/gh/kurtanr/Chip8)](https://codecov.io/gh/kurtanr/Chip8)
 [![Codacy grade](https://img.shields.io/codacy/grade/150a141a27f940a4a3d8429f40d9d101)](https://app.codacy.com/gh/kurtanr/Chip8)
 [![License](https://img.shields.io/github/license/kurtanr/Chip8.svg)](https://github.com/kurtanr/Chip8/blob/master/LICENSE)
 
 ## Introduction
 
-CHIP-8 is an [interpreted programming language](https://en.wikipedia.org/wiki/Interpreted_language) created in the mid-1970s. It was made to allow video games to be more easily programmed for the early 8-bit microcomputers.
+This repository contains [yet another](https://github.com/topics/chip8) implementation of a CHIP-8 emulator.
 
-Systems running CHIP-8 are great candidates for emulation, because of their simple architecture. CHIP-8 specification requires:
+CHIP-8 is an [interpreted programming language](https://en.wikipedia.org/wiki/Interpreted_language) created in the mid-1970s. It was designed to allow video games to be more easily programmed for early 8-bit microcomputers. Systems running CHIP-8 are great candidates for emulation because of their simple architecture.
+
+How this implementation differs from others:
+* **Not just a weekend hackathon project:** Effort was put into code quality.
+  * **Separation of concerns:** Each CPU instruction is implemented separately and is well-documented.
+  * **Modularity & portability:** Core parts of the emulator (instructions, instruction executor) are decoupled, allowing different display, keyboard, and sound implementations to be easily injected.
+  * **Automated pipeline:** Includes quality gates with [Codecov](https://about.codecov.io/) and [Codacy](https://www.codacy.com/) integration.
+  * **Comprehensive testing:** High unit test coverage.
+* Core parts of the emulator available as a NuGet package (TODO: soon), with executables available as WPF / CLI / web application
+* The emulator passes all tests in the [CHIP-8 test suite by Timendus](https://github.com/Timendus/chip8-test-suite)
+* The WPF user interface acts as a debugger, enabling:
+  * Pausing / resuming and executing games one instruction at a time
+  * Inspection of registers
+  * Converting CHIP-8 binary to mnemonic code and vice-versa
+  * Setting breakpoints (TODO: planned)
+
+## TL;DR I want to play some TETRIS / PONG / BRIX ...
+
+An emulator embedded in a Blazor WASM project is available here: https://kurtanr.github.io/Chip8/
+
+WPF & CLI binaries are available on the [releases page](https://github.com/kurtanr/Chip8/releases).
+
+When trying out the games, take note of the original CHIP-8 keyboard layout and how it is emulated:
+```
+Original layout:         Emulated with:
+    1 2 3 C                 1 2 3 4
+    4 5 6 D        -->      Q W E R
+    7 8 9 E                 A S D F
+    A 0 B F                 Z X C V
+```
+
+## CHIP-8 specification
 
 -   Memory / CPU
     -   4096 bytes of addressable memory
@@ -19,27 +50,15 @@ Systems running CHIP-8 are great candidates for emulation, because of their simp
     -   Monochrome display with a resolution of 64x32 pixels
 -   Input
     -   16-key hexadecimal keypad
-        ```
-        Original layout:         Emulated with:
-            1 2 3 C                 1 2 3 4
-            4 5 6 D        -->      Q W E R
-            7 8 9 E                 A S D F
-            A 0 B F                 Z X C V
-        ```
 
 ## Project goals
 
 To provide:
 
--   CHIP-8 interpreter capable of executing CHIP-8 programs
--   Disassembler able to show details about the CHIP-8 program
--   User interface capable of loading and running CHIP-8 programs
-
-## UI Preview
-
-<p align="left">
-    <img src="images/ui-preview.png" alt="ui-preview" style="max-width:100%;">
-</p>
+-   A CHIP-8 interpreter capable of executing CHIP-8 programs
+-   A disassembler able to show details about the CHIP-8 program
+-   A user interface capable of loading and running CHIP-8 programs
+-   An opportunity to have fun and learn something along the way
 
 ## References
 
