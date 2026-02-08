@@ -33,10 +33,10 @@ internal sealed class BlazorDisplay : IDisplay
     _dirty = true;
   }
 
-  /// <summary>
-  /// No-op in Blazor. Rendering is handled by the game loop via <see cref="GetPixelData"/>.
-  /// </summary>
-  public void RenderIfDirty() { }
+  public void RenderIfDirty()
+  {
+    // No - op in Blazor.Rendering is handled by the game loop via GetPixelData.
+  }
 
   /// <summary>
   /// Returns a flat byte array (64×32, row-major, 1=on 0=off) if the display changed since the last call.

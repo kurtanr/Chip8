@@ -52,13 +52,13 @@ html, body {
   transition: background 0.2s;
 }
 
-.toolbar button:hover:not(:disabled) {
-  background: #3a3a5e;
-}
-
 .toolbar button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #3a3a5e;
 }
 
 #chip8-canvas {
