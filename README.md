@@ -4,6 +4,7 @@
 [![Codecov](https://img.shields.io/codecov/c/gh/kurtanr/Chip8)](https://codecov.io/gh/kurtanr/Chip8)
 [![Codacy grade](https://img.shields.io/codacy/grade/150a141a27f940a4a3d8429f40d9d101)](https://app.codacy.com/gh/kurtanr/Chip8)
 [![License](https://img.shields.io/github/license/kurtanr/Chip8.svg)](https://github.com/kurtanr/Chip8/blob/master/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/Chip8)](https://www.nuget.org/packages/Chip8)
 
 ## Introduction
 
