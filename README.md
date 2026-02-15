@@ -17,13 +17,30 @@ How this implementation differs from others:
   * **Modularity & portability:** Core parts of the emulator (instructions, instruction executor) are decoupled, allowing different display, keyboard, and sound implementations to be easily injected.
   * **Automated pipeline:** Includes quality gates with [Codecov](https://about.codecov.io/) and [Codacy](https://www.codacy.com/) integration.
   * **Comprehensive testing:** High unit test coverage.
-* Core parts of the emulator available as a NuGet package (TODO: soon), with executables available as WPF / CLI / web application
+* Core parts of the emulator available as a [NuGet package](https://www.nuget.org/packages/Chip8), with executables available as WPF / CLI / web application
 * The emulator passes all tests in the [CHIP-8 test suite by Timendus](https://github.com/Timendus/chip8-test-suite)
 * The WPF user interface acts as a debugger, enabling:
   * Pausing / resuming and executing games one instruction at a time
   * Inspection of registers
   * Converting CHIP-8 binary to mnemonic code and vice-versa
   * Setting breakpoints (TODO: planned)
+
+## Screenshots of UI implementations
+
+### WPF (Debugger)
+The WPF application provides a full debugging environment. You can inspect registers, view the disassembled code, and execute instructions step-by-step.
+
+![WPF Debugger](images/debugger.png)
+
+### CLI
+A lightweight console application for running ROMs directly from your terminal.
+
+![CLI](images/cli.png)
+
+### Web (Blazor WASM)
+The emulator running directly in your browser using Blazor WebAssembly.
+
+![Web](images/web.png)
 
 ## TL;DR I want to play some TETRIS / PONG / BRIX ...
 

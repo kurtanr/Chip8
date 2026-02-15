@@ -100,12 +100,29 @@ jobs:
     - name: Add .nojekyll
       run: New-Item -Path "publish/blazor/wwwroot/.nojekyll" -ItemType File -Force
 
+    # ── NuGet ────────────────────────────────────────────────────────────────
+    - name: Pack NuGet
+      run: >
+        dotnet pack src/Chip8/Chip8.csproj
+        -c Release
+        --no-build
+        -o publish/nuget
+
     # ── Upload artifacts for downstream jobs ─────────────────────────────────
     - name: Upload release zips
       uses: actions/upload-artifact@v4
       with:
         name: release-zips
         path: publish/*.zip
+        retention-days: 1
+
+    - name: Upload NuGet packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: |
+          publish/nuget/*.nupkg
+          publish/nuget/*.snupkg
         retention-days: 1
 
     - name: Upload Blazor site
@@ -152,3 +169,29 @@ jobs:
         name: v${{ needs.build.outputs.version }}
         generate_release_notes: true
         files: artifacts/*.zip
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Publish NuGet package to nuget.org
+  # ────────────────────────────────────────────────────────────────────────────
+  publish-nuget:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Download NuGet packages
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages
+        path: packages
+
+    - name: Push to NuGet.org
+      run: >
+        dotnet nuget push "packages/*.nupkg"
+        --api-key ${{ secrets.NUGET_API_KEY }}
+        --source https://api.nuget.org/v3/index.json
+        --skip-duplicate

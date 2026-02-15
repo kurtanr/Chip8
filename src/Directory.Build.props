@@ -3,6 +3,30 @@
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>14.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Version>0.8.0</Version>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <!-- Common metadata shared across all projects -->
+  <PropertyGroup>
+    <Authors>kurtanr</Authors>
+    <Copyright>Copyright (c) 2020-2026 Robert Kurtanjek</Copyright>
+    <RepositoryUrl>https://github.com/kurtanr/Chip8</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- Prevent accidental NuGet publishing of non-library projects -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Source Link: embeds source control metadata for improved debugging -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <!-- Deterministic builds in CI for reproducible packages -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 </Project>
