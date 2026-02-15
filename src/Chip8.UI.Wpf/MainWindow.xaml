@@ -40,7 +40,7 @@
     <KeyBinding Command="{Binding NewSourceCodeCommand}" Key="N" Modifiers="Ctrl" />
     <KeyBinding Command="{Binding LoadSourceCodeCommand}" Key="O" Modifiers="Ctrl" />
     <KeyBinding Command="{Binding SaveSourceCodeCommand}" Key="S" Modifiers="Ctrl" />
-    <KeyBinding Command="{Binding BuildSourceCodeCommand}" Key="F6" Modifiers="" />
+    <KeyBinding Command="{Binding AssembleSourceCodeCommand}" Key="F6" Modifiers="" />
     <KeyBinding Command="{Binding ToggleBreakpointCommand}" Key="F9" Modifiers="" />
   </Window.InputBindings>
 
@@ -127,7 +127,7 @@
           <Button ToolTip="Save Source Code File (Ctrl+S)" Command="{Binding SaveSourceCodeCommand}" Margin="0,0,5,0">
             <Image Source="{Binding IsDarkMode, Converter={StaticResource ImageConverter}, ConverterParameter=save}" Height="25" Width="25" />
           </Button>
-          <Button ToolTip="Build Source Code (F6)" Command="{Binding BuildSourceCodeCommand}" Margin="6,0,1,0">
+          <Button ToolTip="Assemble Source Code (F6)" Command="{Binding AssembleSourceCodeCommand}" Margin="6,0,1,0">
             <Image Source="{Binding IsDarkMode, Converter={StaticResource ImageConverter}, ConverterParameter=build}" Height="25" Width="25" />
           </Button>
           <Button ToolTip="Toggle Breakpoint (F9)" Command="{Binding ToggleBreakpointCommand}">

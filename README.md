@@ -68,13 +68,41 @@ Original layout:         Emulated with:
 -   Input
     -   16-key hexadecimal keypad
 
+## I want to write my own CHIP-8 games
+
+The CHIP-8 specification defines a set of instructions and how they are represented in memory. However, it does not define a standard set of mnemonics (symbolic names for machine language instructions). This implementation uses the mnemonics specified in [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM).
+
+The simplest CHIP-8 program is one that clears the screen in an infinite loop. Since CHIP-8 programs start at memory address `0x200` (hex), the logic is:
+1. Clear the screen.
+2. Jump back to the starting address.
+
+Using Cowgod's mnemonics, the code looks like this:
+```nasm
+CLS
+JP 0x200
+```
+
+You can assemble this code into an executable using the provided debugger:
+
+![SimpleApp](images/simple.png)
+
+1. Type the mnemonic instructions into the right pane.
+2. Press **F6** or click the **"Assemble Source Code"** button.
+3. The assembled code and generated comments will appear in the left pane.
+4. Run the application using the **Run (F5)** or **Execute Single Step (F10)** buttons.
+5. Save the assembled binary using the **Save** button (already saved as 'simple' in the screenshot).
+
+The saved binary can be opened in any compatible CHIP-8 emulator.
+
+Opening the 'simple' file in a hex editor would show the following bytes: `00 E0 12`
+
 ## Project goals
 
 To provide:
 
 -   A CHIP-8 interpreter capable of executing CHIP-8 programs
 -   A disassembler able to show details about the CHIP-8 program
--   A user interface capable of loading and running CHIP-8 programs
+-   A user interface capable of loading, running and debugging CHIP-8 programs
 -   An opportunity to have fun and learn something along the way
 
 ## References
