@@ -78,7 +78,7 @@ public partial class MainViewModel
     InstructionInCode = string.Join(Environment.NewLine, _instructions.Select(x => x.SourceCodeDisplay));
     CpuRegisters = _emulator.GetValueOfCpuRegisters();
 
-    _isBinaryModified = false;
+    _isBinaryModified = true;
 
     RefreshUI();
   }
@@ -201,9 +201,9 @@ public partial class MainViewModel
     ClearUIAfterLoadingExistingOrCreatingNewSourceCode();
   }
 
-  private void BuildSourceCode()
+  private void AssembleSourceCode()
   {
-    var decompiledApplication = InstructionInCode!
+    var disassembledApplication = InstructionInCode!
       .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
       .Select(x => x.Trim())
       .ToArray();
@@ -213,12 +213,12 @@ public partial class MainViewModel
 
     // Convert all lines of code into CPU instructions
     var cpuInstructions = new List<CpuInstruction>();
-    for (int i = 0; i < decompiledApplication.Length; i++)
+    for (int i = 0; i < disassembledApplication.Length; i++)
     {
-      var cpuInstruction = instructionEncoder.GetCpuInstruction(decompiledApplication[i]);
+      var cpuInstruction = instructionEncoder.GetCpuInstruction(disassembledApplication[i]);
       if (cpuInstruction.Decoded.InstructionCode == 0x0000)
       {
-        buildErrors.Add($"Line {i + 1}: Unable to encode instruction: '{decompiledApplication[i]}'");
+        buildErrors.Add($"Line {i + 1}: Unable to encode instruction: '{disassembledApplication[i]}'");
         continue;
       }
 
@@ -291,7 +291,7 @@ public partial class MainViewModel
     CanExecuteSingleStep = _emulator.IsApplicationLoaded && !_emulator.IsApplicationRunning;
 
     CanNewSourceCode = !_emulator.IsApplicationRunning && !_emulator.IsApplicationPaused;
-    CanBuildSourceCode = !_emulator.IsApplicationRunning && !_emulator.IsApplicationPaused &&
+    CanAssembleSourceCode = !_emulator.IsApplicationRunning && !_emulator.IsApplicationPaused &&
       !string.IsNullOrWhiteSpace(InstructionInCode);
 
     CommandManager.InvalidateRequerySuggested();

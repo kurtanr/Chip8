@@ -63,12 +63,12 @@ public partial class MainViewModel : INotifyPropertyChanged
 
   // Source code commands
   public ICommand NewSourceCodeCommand { get; private set; }
-  public ICommand BuildSourceCodeCommand { get; private set; }
+  public ICommand AssembleSourceCodeCommand { get; private set; }
   public ICommand ToggleBreakpointCommand { get; private set; }
 
   // Can execute source code commands
   public bool CanNewSourceCode { get; private set; }
-  public bool CanBuildSourceCode { get; private set; }
+  public bool CanAssembleSourceCode { get; private set; }
   public bool CanToggleBreakpoint { get; private set; }
 
   public string? InstructionInMemory
@@ -186,8 +186,8 @@ public partial class MainViewModel : INotifyPropertyChanged
     NewSourceCodeCommand = new RelayCommand(
       NewSourceCode, () => CanNewSourceCode);
 
-    BuildSourceCodeCommand = new RelayCommand(
-      BuildSourceCode, () => CanBuildSourceCode);
+    AssembleSourceCodeCommand = new RelayCommand(
+      AssembleSourceCode, () => CanAssembleSourceCode);
 
     ToggleBreakpointCommand = new RelayCommand(
       ToggleBreakpoint, () => CanToggleBreakpoint);
