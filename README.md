@@ -13,6 +13,7 @@ This repository contains [yet another](https://github.com/topics/chip8) implemen
 CHIP-8 is an [interpreted programming language](https://en.wikipedia.org/wiki/Interpreted_language) created in the mid-1970s. It was designed to allow video games to be more easily programmed for early 8-bit microcomputers. Systems running CHIP-8 are great candidates for emulation because of their simple architecture.
 
 How this implementation differs from others:
+
 * **Not just a weekend hackathon project:** Effort was put into code quality.
   * **Separation of concerns:** Each CPU instruction is implemented separately and is well-documented.
   * **Modularity & portability:** Core parts of the emulator (instructions, instruction executor) are decoupled, allowing different display, keyboard, and sound implementations to be easily injected.
@@ -29,28 +30,32 @@ How this implementation differs from others:
 ## Screenshots of UI implementations
 
 ### WPF (Debugger)
+
 The WPF application provides a full debugging environment. You can inspect registers, view the disassembled code, and execute instructions step-by-step.
 
-![WPF Debugger](images/debugger.png)
+![WPF Debugger](https://raw.githubusercontent.com/kurtanr/Chip8/refs/heads/master/images/debugger.png)
 
 ### CLI
+
 A lightweight console application for running ROMs directly from your terminal.
 
-![CLI](images/cli.png)
+![CLI](https://raw.githubusercontent.com/kurtanr/Chip8/refs/heads/master/images/cli.png)
 
 ### Web (Blazor WASM)
+
 The emulator running directly in your browser using Blazor WebAssembly.
 
-![Web](images/web.png)
+![Web](https://raw.githubusercontent.com/kurtanr/Chip8/refs/heads/master/images/web.png)
 
 ## TL;DR I want to play some TETRIS / PONG / BRIX ...
 
-An emulator embedded in a Blazor WASM project is available here: https://kurtanr.github.io/Chip8/
+An emulator embedded in a Blazor WASM project is available here: <https://kurtanr.github.io/Chip8/>
 
 WPF & CLI binaries are available on the [releases page](https://github.com/kurtanr/Chip8/releases).
 
-When trying out the games, take note of the original CHIP-8 keyboard layout and how it is emulated:
-```
+When trying out the games, take note of the original CHIP-8 keyboard layout and how it is emulated (on QWERTY keyboard layout):
+
+```text
 Original layout:         Emulated with:
     1 2 3 C                 1 2 3 4
     4 5 6 D        -->      Q W E R
@@ -60,24 +65,26 @@ Original layout:         Emulated with:
 
 ## CHIP-8 specification
 
--   Memory / CPU
-    -   4096 bytes of addressable memory
-    -   Sixteen 8-bit data registers (V0-VF)
-    -   One 16 bit address register (I)
--   Graphics
-    -   Monochrome display with a resolution of 64x32 pixels
--   Input
-    -   16-key hexadecimal keypad
+* Memory / CPU
+  * 4096 bytes of addressable memory
+  * Sixteen 8-bit data registers (V0-VF)
+  * One 16 bit address register (I)
+* Graphics
+  * Monochrome display with a resolution of 64x32 pixels
+* Input
+  * 16-key hexadecimal keypad
 
 ## I want to write my own CHIP-8 games
 
 The CHIP-8 specification defines a set of instructions and how they are represented in memory. However, it does not define a standard set of mnemonics (symbolic names for machine language instructions). This implementation uses the mnemonics specified in [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM).
 
 The simplest CHIP-8 program is one that clears the screen in an infinite loop. Since CHIP-8 programs start at memory address `0x200` (hex), the logic is:
+
 1. Clear the screen.
 2. Jump back to the starting address.
 
 Using Cowgod's mnemonics, the code looks like this:
+
 ```nasm
 CLS
 JP 0x200
@@ -85,7 +92,7 @@ JP 0x200
 
 You can assemble this code into an executable using the provided debugger:
 
-![SimpleApp](images/simple.png)
+![SimpleApp](https://raw.githubusercontent.com/kurtanr/Chip8/refs/heads/master/images/simple.png)
 
 1. Type the mnemonic instructions into the right pane.
 2. Press **F6** or click the **"Assemble Source Code"** button.
@@ -101,14 +108,15 @@ Opening the 'simple' file in a hex editor would show the following bytes: `00 E0
 
 To provide:
 
--   A CHIP-8 interpreter capable of executing CHIP-8 programs
--   A disassembler able to show details about the CHIP-8 program
--   A user interface capable of loading, running and debugging CHIP-8 programs
--   An opportunity to have fun and learn something along the way
+* A CHIP-8 interpreter capable of executing CHIP-8 programs
+* A disassembler able to show details about the CHIP-8 program
+* A user interface capable of loading, running and debugging CHIP-8 programs
+* An opportunity to have fun and learn something along the way
 
 ## References
 
--   [Wikipedia CHIP-8 article](https://en.wikipedia.org/wiki/CHIP-8)
--   [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
--   [CHIP-8 test suite by Timendus](https://github.com/Timendus/chip8-test-suite)
--   [CHIP-8 ROMs that are in the public domain](https://archive.org/details/Chip-8RomsThatAreInThePublicDomain)
+* [Wikipedia CHIP-8 article](https://en.wikipedia.org/wiki/CHIP-8)
+* [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
+* [CHIP-8 test suite by Timendus](https://github.com/Timendus/chip8-test-suite)
+* [CHIP-8 ROMs that are in the public domain](https://archive.org/details/Chip-8RomsThatAreInThePublicDomain)
+* [Cadmium - A CHIP-8 variant emulation and development environment](https://github.com/gulrak/cadmium)
